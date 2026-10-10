@@ -1,4 +1,4 @@
-const CACHE = "random-draw-v3";
+const CACHE = "random-draw-v4";
 const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
                "./img/snail.png","./img/smail.png"            
               ];
