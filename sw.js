@@ -1,12 +1,7 @@
-const CACHE = "random-draw-v2";
+const CACHE = "random-draw-v3";
 const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
                "./img/snail.png","./img/smail.png"            
               ];
-const items = [
-  { text: "Apple",  image: "img/smail.png" },
-  { text: "Banana", image: "img/snail.png" },
-];
-
 self.addEventListener("install", e =>
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)))
 );
