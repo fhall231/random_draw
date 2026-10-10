@@ -149,7 +149,7 @@
       return list[i];
     }
 
-    function drawText()  { document.getElementById("label").textContent = pick(texts, "text"); }
+    function drawText()  { document.getElementById("label").innerHTML = pick(texts, "text"); }
     function drawTile()  { document.getElementById("tile").src  = pick(tiles, "tile"); }
     function drawPhoto() { document.getElementById("photo").src = pick(photos, "photo"); }
 
