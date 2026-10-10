@@ -31,7 +31,7 @@
   </style>
 </head>
 
-<body>
+<body> { background: #1e293b; }
   <!-- HTML: the things that appear on screen. The id lets JavaScript find them. -->
   <h1 id="label">Press draw</h1>
   <img id="pic" alt="">
@@ -58,7 +58,7 @@
       { text: "Apple",  image: placeholder("#e11d48", "A") },
       { text: "Banana", image: placeholder("#eab308", "B") },
       { text: "Cherry", image: placeholder("#9f1239", "C") },
-      { text: "Grape",  image: placeholder("#7c3aed", "G") },
+      { text: "Grape",  image: "img/snail.png" },
     ];
 
     let last = -1;  // index of the previous pick, to avoid immediate repeats
