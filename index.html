@@ -49,7 +49,11 @@
   <!-- HTML: the things that appear on screen. The id lets JavaScript find them. -->
   <h1 id="label">Press draw</h1>
   <img id="pic" alt="">
-  <p><button onclick="draw()">Draw</button></p>
+  <p>
+	  <button class="secondary" onclick="drawText()">Text</button>
+	  <button onclick="drawBoth()">Both</button>
+	  <button class="secondary" onclick="drawImage()">Image</button>
+  </p>
 
   <script>
     // JavaScript: the logic.
