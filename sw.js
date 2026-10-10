@@ -1,6 +1,6 @@
 const CACHE = "random-draw-v4";
 const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png",
-               "./img/snail.png","./img/smail.png"            
+               "./img/snail.png","./img/smail.png","./img/eg1.jpg"            
               ];
 
 self.addEventListener("install", e => {
