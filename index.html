@@ -2,84 +2,152 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- Makes the page scale properly on a phone screen -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Random Draw</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
-  <meta name="theme-color" content="#007755">
-  <title>Random Draw</title>
+  <meta name="theme-color" content="#000000">
 
-  <!-- CSS: purely visual, safe to ignore at first -->
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       margin: 0;
-      padding: 2rem 1rem;
-      background: #000011;
+      padding: 1.5rem 1rem 3rem;
+      background: #000000;
+      color: #e5e7eb;
     }
-    #label { font-size: 2.5rem; margin: 1rem 0; }
-    #pic   { width: 220px; height: 220px; object-fit: contain; border-radius: 16px; }
-	button {
-	  font-size: 1.2rem;
-	  padding: 0.7rem 1.6rem;
-	  margin: 0.3rem;
-	  min-height: 48px;               /* comfortable tap target on a phone */
-	  border: none;
-	  border-radius: 12px;
-	  background: #3b82f6;
-	  color: white;
-	  box-shadow: 0 4px 0 #1d4ed8;    /* the "thickness" under the button */
-	  cursor: pointer;
-	  transition: transform 0.05s, box-shadow 0.05s;
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+
+    /* Text in a box that works as a button */
+    .textbox {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.8rem;
+      color: #e5e7eb;
+      min-width: 220px;
+      padding: 0.8rem 2rem;
+      margin: 1rem 0 1.5rem;
+      background: #000000;
+      border: 1px solid #003155;
+      border-radius: 10px;
+    }
+    .textbox:active { background: #14204a; }
+
+    /* Images that work as buttons */
+    .imgbtn {
+      display: block;
+      margin: 0 auto 1.5rem;
+      padding: 0;
+      background: none;
+      border: none;
+      border-radius: 10px;
+      line-height: 0;            /* removes the small gap under the image */
+    }
+    .imgbtn:active { transform: scale(0.97); }
+
+    #tile {
+      width: 110px;
+      height: 110px;
+      border-radius: 10px;
+    }
+
+    .imgbtn.wide { width: min(500px, 100%); }
+    #photo {
+      width: 100%;
+      aspect-ratio: 500 / 230;
+      object-fit: cover;         /* crops to fit instead of stretching */
+      border-radius: 10px;
+      background: #0b1330;       /* shown while the image loads */
+    }
+
+	.row {
+	  display: flex;
+	  gap: 1rem;
+	  align-items: stretch;
+	  width: min(500px, 100%);
+	  margin: 0 auto 1.5rem;
 	}
-	button:active {
-	  transform: translateY(4px);     /* sinks into the shadow when pressed */
-	  box-shadow: none;
+	.row .imgbtn {
+	  margin: 0;
+	  flex: none;
 	}
-	button.secondary {
-	  background: #e2e8f0;
-	  color: #1e293b;
-	  box-shadow: 0 4px 0 #94a3b8;
+	.row .textbox {
+	  flex: 1;
+	  min-width: 0;
+	  margin: 0;
+	  padding: 0 1rem;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
 	}
   </style>
 </head>
 
 <body>
-  <!-- HTML: the things that appear on screen. The id lets JavaScript find them. -->
-  <h1 id="label">Press draw</h1>
-  <img id="pic" alt="">
-  <p>
-	  <button class="secondary" onclick="drawText()">Text</button>
-	  <button onclick="drawBoth()">Both</button>
-	  <button class="secondary" onclick="drawImage()">Image</button>
-  </p>
+	<div class="row">
+	  <button class="imgbtn" onclick="drawTile()" aria-label="New tile">
+		<img id="tile" alt="">
+	  </button>
+	  <button class="textbox" id="label" onclick="drawText()"></button>
+	</div>
+
+	<button class="imgbtn wide" onclick="drawPhoto()" aria-label="New photo">
+	<img id="photo" alt="">
+	</button>
 
   <script>
-	const texts  = ["Apple", "Banana", "Cherry", "Grape"];
-	const images = [
-	  placeholder("#e11d48", "A"),   // or "images/apple.png", ...
-	  placeholder("#eab308", "B"),
-	  placeholder("#9f1239", "C"),
-	  placeholder("#7c3aed", "G"),
-	];
-	
-	const last = { text: -1, image: -1 };   // previous pick for each list
-	
-	function pick(list, key) {
-	  let i;
-	  do {
-	    i = Math.floor(Math.random() * list.length);
-	  } while (i === last[key] && list.length > 1);
-	  last[key] = i;
-	  return list[i];
-	}
-	
-	function drawText()  { document.getElementById("label").textContent = pick(texts, "text"); }
-	function drawImage() { document.getElementById("pic").src = pick(images, "image"); }
-	function drawBoth()  { drawText(); drawImage(); }
-	
-	drawBoth();   // draw on load
+    // Generated tile images (colored square with a letter)
+    function placeholder(color, letter) {
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
+        `<rect width="220" height="220" fill="${color}"/>` +
+        `<text x="110" y="145" font-size="110" text-anchor="middle" fill="white">${letter}</text>` +
+        `</svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    const texts = ["Apple", "Banana", "Cherry", "Grape"];
+
+    const tiles = [
+      placeholder("#e11d48", "A"),
+      placeholder("#eab308", "B"),
+      placeholder("#9f1239", "C"),
+      placeholder("#7c3aed", "G"),
+    ];
+
+    // EDIT THIS: the file names of the pictures in your img/ folder
+    const photos = [
+      "img/photo1.jpg",
+      "img/photo2.jpg",
+      "img/photo3.jpg",
+    ];
+
+    // Remember the previous pick of each list to avoid immediate repeats
+    const last = { text: -1, tile: -1, photo: -1 };
+
+    function pick(list, key) {
+      let i;
+      do {
+        i = Math.floor(Math.random() * list.length);
+      } while (i === last[key] && list.length > 1);
+      last[key] = i;
+      return list[i];
+    }
+
+    function drawText()  { document.getElementById("label").textContent = pick(texts, "text"); }
+    function drawTile()  { document.getElementById("tile").src  = pick(tiles, "tile"); }
+    function drawPhoto() { document.getElementById("photo").src = pick(photos, "photo"); }
+
+    // Draw everything on load
+    drawText();
+    drawTile();
+    drawPhoto();
+
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
   </script>
 </body>
 </html>
