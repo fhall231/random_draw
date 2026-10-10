@@ -1,0 +1,12 @@
+Updating
+
+because the service worker caches files, edits to the package do not show up on right away.
+Whenever you change anything, bump CACHE to random-draw-v2, v3, and so on.
+That forces a refresh, and the activate handler cleans up the old cache.
+
+Real images: list image files in FILES in sw.js so they are available offline.
+
+Relative paths: keep paths relative ("sw.js", "./", never "/sw.js"). The site lives under /random-draw/, and absolute paths would break it.
+
+Testing locally: service workers need https:// or localhost, so double-clicking the file won’t register one.
+To test before pushing, run python3 -m http.server in the folder and open http://localhost:8000.
