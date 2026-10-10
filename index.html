@@ -101,14 +101,14 @@
 
   <script>
     // Generated tile images (colored square with a letter)
-    function placeholder(color, letter, textcolor) {
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
-        `<rect width="220" height="220" fill="${color}"/>` +
-        `<text x="110" y="145" font-size="110" text-anchor="middle" fill="white">${letter}</text>` +
-        `</svg>`;
-      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-    }
+	function placeholder(color, letter, textColor) {
+	  const svg =
+	    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
+	    `<rect width="220" height="220" fill="${color}"/>` +
+	    `<text x="110" y="145" font-size="110" text-anchor="middle" fill="${textColor}">${letter}</text>` +
+	    `</svg>`;
+	  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+	}
 
     const texts = ["Major (Ionian)", "Melodic minor", "Harmonic minor", "Major pentatonic", "Minor pentatonic",
 				   "Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","Altered","Mixolydian ♭6"];
