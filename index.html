@@ -99,24 +99,32 @@
   <script>
     // Generated tile images (colored square with a letter)
 	function placeholder(color, letter, textColor) {
-	  const svg =
-	    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
-	    `<rect width="220" height="220" fill="${color}"/>` +
-	    `<text x="110" y="145" font-size="110" text-anchor="middle" fill="${textColor}">${letter}</text>` +
-	    `</svg>`;
-	  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+
+		
+		const label = letter
+		  .replace(/\^(\w|\{[^}]+\})/g, (m, s) =>
+		    `<tspan dy="-45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="45">\u200B</tspan>`)
+		  .replace(/_(\w|\{[^}]+\})/g, (m, s) =>
+		    `<tspan dy="45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="-45">\u200B</tspan>`);
+
+		const svg =
+		`<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
+		`<rect width="220" height="220" fill="${color}"/>` +
+		`<text x="110" y="145" font-size="110" text-anchor="middle" fill="${textColor}">${letter}</text>` +
+		`</svg>`;
+		return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
 	}
 
     const texts = ["Major (Ionian)", "Melodic minor", "Harmonic minor", "Major pentatonic", "Minor pentatonic",
 				   "Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","Altered","Mixolydian ♭6"];
 
     const tiles = [
-		placeholder("#7c3aed", "E = mc<sup>2</sup>", "#000000"),
-		placeholder("#7c3aed", "G<sub>♭</sub>", "#000000"),
-		placeholder("#e11d48", "D<sub>7</sub>", "#003300"),
-		placeholder("#9f1239", "A<sub>♭</sub>", "#000000"),
-		placeholder("#eab308", "E<sub>♭</sub>", "#aa0000"),
-		placeholder("#eab308", "B<sub>♭</sub>", "#0000aa"),
+		placeholder("#7c3aed", "C_♭", "#000000"),
+		placeholder("#7c3aed", "G_♭", "#000000"),
+		placeholder("#e11d48", "D_♭", "#003300"),
+		placeholder("#9f1239", "A_♭", "#000000"),
+		placeholder("#eab308", "E_♭", "#aa0000"),
+		placeholder("#eab308", "B_♭", "#0000aa"),
 		placeholder("#eeeeee", "F", "#000000"),
 		placeholder("#eeeeee", "C", "#000000"),
 		placeholder("#eab308", "G", "#000000"),
@@ -124,8 +132,8 @@
 		placeholder("#7c3aed", "A", "#000000"),
 		placeholder("#e11d48", "E", "#000000"),
 		placeholder("#eab308", "B", "#000000"),
-		placeholder("#9f1239", "F<sup>♯</sup>", "#000000"),
-		placeholder("#9f1239", "C<sup>♯</sup>", "#000000"),
+		placeholder("#9f1239", "F^♯", "#000000"),
+		placeholder("#9f1239", "C^♯", "#000000"),
     ];
 
     // EDIT THIS: the file names of the pictures in your img/ folder
