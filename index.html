@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Makes the page scale properly on a phone screen -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3b82f6">
+  <title>Random Draw</title>
+
+  <!-- CSS: purely visual, safe to ignore at first -->
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 2rem 1rem;
+      background: #fafafa;
+    }
+    #label { font-size: 2.5rem; margin: 1rem 0; }
+    #pic   { width: 220px; height: 220px; object-fit: contain; border-radius: 16px; }
+    button {
+      font-size: 1.5rem;
+      padding: 0.8rem 2.5rem;
+      border: none;
+      border-radius: 999px;
+      background: #3b82f6;
+      color: white;
+    }
+    button:active { background: #2563eb; }
+  </style>
+</head>
+
+<body>
+  <!-- HTML: the things that appear on screen. The id lets JavaScript find them. -->
+  <h1 id="label">Press draw</h1>
+  <img id="pic" alt="">
+  <p><button onclick="draw()">Draw</button></p>
+
+  <script>
+    // JavaScript: the logic.
+
+    // Placeholder images generated in code, so this file works on its own.
+    // Not needed once you use real image files (see the items list below).
+    function placeholder(color, letter) {
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220">` +
+        `<rect width="220" height="220" fill="${color}"/>` +
+        `<text x="110" y="145" font-size="110" text-anchor="middle" fill="white">${letter}</text>` +
+        `</svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    // Your preloaded list: an array of objects, each with a text and an image.
+    // To use real pictures, put them in the same folder as this file and write
+    // e.g.  image: "apple.png"
+    const items = [
+      { text: "Apple",  image: placeholder("#e11d48", "A") },
+      { text: "Banana", image: placeholder("#eab308", "B") },
+      { text: "Cherry", image: placeholder("#9f1239", "C") },
+      { text: "Grape",  image: placeholder("#7c3aed", "G") },
+    ];
+
+    let last = -1;  // index of the previous pick, to avoid immediate repeats
+
+    function draw() {
+      let i;
+      do {
+        i = Math.floor(Math.random() * items.length);  // random int in 0..length-1
+      } while (i === last && items.length > 1);
+      last = i;
+
+      const pick = items[i];
+      document.getElementById("label").textContent = pick.text;
+      document.getElementById("pic").src = pick.image;
+    }
+	if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+  </script>
+</body>
+</html>
