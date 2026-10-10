@@ -101,7 +101,7 @@
 
   <script>
     // Generated tile images (colored square with a letter)
-    function placeholder(color, letter) {
+    function placeholder(color, letter, textcolor) {
       const svg =
         `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
         `<rect width="220" height="220" fill="${color}"/>` +
@@ -113,10 +113,21 @@
     const texts = ["Apple", "Banana", "Cherry", "Grape"];
 
     const tiles = [
-      placeholder("#e11d48", "A"),
-      placeholder("#eab308", "B♭"),
-      placeholder("#9f1239", "C"),
-      placeholder("#7c3aed", "G♯"),
+		placeholder("#7c3aed", "C<sub>♭</sub>", "#000000"),
+		placeholder("#7c3aed", "G<sub>♭</sub>", "#000000"),
+		placeholder("#e11d48", "D<sub>♭</sub>", "#000000"),
+		placeholder("#9f1239", "A<sub>♭</sub>", "#000000"),
+		placeholder("#eab308", "E<sub>♭</sub>", "#000000"),
+		placeholder("#eab308", "B<sub>♭</sub>", "#000000"),
+		placeholder("#eeeeee", "F", "#000000"),
+		placeholder("#eeeeee", "C", "#000000"),
+		placeholder("#eab308", "G", "#000000"),
+		placeholder("#9f1239", "D", "#000000"),
+		placeholder("#7c3aed", "A", "#000000"),
+		placeholder("#e11d48", "E", "#000000"),
+		placeholder("#eab308", "B", "#000000"),
+		placeholder("#9f1239", "F♯", "#000000"),
+		placeholder("#9f1239", "C<sup>♯</sup>", "#000000"),
     ];
 
     // EDIT THIS: the file names of the pictures in your img/ folder
