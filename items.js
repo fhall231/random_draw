@@ -7,12 +7,12 @@ const DEFAULTS = {
 		  "Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","Altered","Mixolydian ♭6","whole-tone"],
 
   tiles: [
-		"C_♭ | #111111 | #eee",
-		"G_♭ | #009459 | #eee",
-		"D_♭ | #ffaa6b | #000",
-		"A_♭ | #d9a0f7 | #eee",
-		"E_♭ | #ff6600 | #eee",
-		"B_♭ | #348EA8 | #eee",
+		"C♭ | #111111 | #eee",
+		"G♭ | #009459 | #eee",
+		"D♭ | #ffaa6b | #000",
+		"A♭ | #d9a0f7 | #eee",
+		"E♭ | #ff6600 | #eee",
+		"B♭ | #348EA8 | #eee",
 		"F   | #058503 | #eee",
 		"C   | #eeeeee | #000",
 		"G   | #021EA1 | #eee",
