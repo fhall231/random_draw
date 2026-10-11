@@ -13,8 +13,22 @@ const THEME = {
 const DEFAULTS = {
   deck: false,
   
-  texts: ["Major (Ionian)", "Melodic minor", "Harmonic minor", "Major pentatonic", "Minor pentatonic",
-		  "Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","Altered","Mixolydian ♭6","whole-tone"],
+  texts: [
+	      "Major (Ionian) | 0.8",
+		  "Melodic minor",
+		  "Harmonic minor",
+		  "Major pentatonic",
+		  "Minor pentatonic",
+		  "Dorian",
+		  "Phrygian",
+		  "Lydian",
+		  "Mixolydian",
+		  "Aeolian",
+		  "Locrian | 0.7",
+		  "Altered",
+		  "Mixolydian ♭6",
+		  "whole-tone | 0.8"
+		 ],
 
   tiles: [    // letter | background | letter colour | weight (optional)
 		"C♭ | #333 | #eee | 0.2",
