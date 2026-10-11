@@ -100,10 +100,10 @@
     // Generated tile images (colored square with a letter)
   	function placeholder(color, letter, textColor) {
 	  const label = letter
-	    .replace(/\^(\w|\{[^}]+\})/g, (m, s) =>
-	      `<tspan dy="-45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="45">\u200B</tspan>`)
-	    .replace(/_(\w|\{[^}]+\})/g, (m, s) =>
-	      `<tspan dy="45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="-45">\u200B</tspan>`);
+	    .replace(/\^([^\s{}^_]|\{[^}]+\})/gu, (m, s) =>
+		`<tspan dy="-45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="45">\u200B</tspan>`)
+	    .replace(/_([^\s{}^_]|\{[^}]+\})/gu, (m, s) =>
+		`<tspan dy="45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="-45">\u200B</tspan>`);
 	
 	  const svg =
 	    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
