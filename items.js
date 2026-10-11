@@ -24,7 +24,12 @@ const DEFAULTS = {
 		"C^♯ | #000000 | #eee",
     ],
 
-    photos: ["img/eg1.png", "img/snail.png","img/ms.svg","img/equation.svg"],
+    //photos: ["img/eg1.png", "img/snail.png","img/ms.svg","img/equation.svg"],
+	photos: [
+     // AUTO-PHOTOS-START
+     "img/snail.png",
+     // AUTO-PHOTOS-END
+   ],
 
 };
 
