@@ -250,8 +250,8 @@
 	const TILE_FONT = 100;   // same size for every tile
     function tileSVG(letter, bg, fg) {
 	  const size = TILE_FONT;
- 	  const up = Math.round(size * 0.45), small = Math.round(size * 0.55);
-  	  const y  = Math.round(110 + size * 0.36);
+ 	  const up = Math.round(size * 0.25), small = Math.round(size * 0.65);
+  	  const y  = Math.round(100 + size * 0.36);
       const label = esc(letter)
         .replace(SUP, (m, s) => `<tspan dy="-${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="${up}">​</tspan>`)
         .replace(SUB, (m, s) => `<tspan dy="${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="-${up}">​</tspan>`);
