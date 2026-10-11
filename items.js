@@ -54,7 +54,6 @@ const DEFAULTS = {
       "img/ms.svg",
       "img/ms_1.svg",
       "img/ms_2.svg",
-      "img/snail.png",
       // AUTO-IMG-END
     ],
 
