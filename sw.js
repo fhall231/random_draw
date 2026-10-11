@@ -26,8 +26,10 @@ self.addEventListener("fetch", e => {
   e.respondWith(
     fetch(e.request, { cache: "no-cache" })       // always ask the server first
       .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));  // refresh the cache
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+        }
         return res;
       })
       .catch(() => caches.match(e.request))       // offline: use the cache
