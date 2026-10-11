@@ -1,0 +1,25 @@
+name: Update photo list
+
+on:
+  push:
+    paths: ["img/**"]
+  workflow_dispatch:        # also adds a "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 update_photos.py
+      - name: Commit if the list changed
+        run: |
+          if ! git diff --quiet items.js; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add items.js
+            git commit -m "Update photo list"
+            git push
+          fi
