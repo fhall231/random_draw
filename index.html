@@ -47,6 +47,15 @@
       border-radius: 3px;
     }
 
+	#menuBtn, #backBtn {
+	  position: fixed;
+	  top: 0.5rem;
+	  right: 0.5rem;
+	  /* ...the rest of your current #menuBtn rule, unchanged... */
+	}
+	#backBtn { right: calc(0.5rem + 37px + 6px); }   /* sits just left of the menu button */
+	#backBtn:disabled { opacity: 0.35; cursor: default; }
+
     /* ---------- main layout ---------- */
 	.row {
 	  display: flex;
@@ -144,6 +153,7 @@
 
 <body>
   <button id="menuBtn" aria-label="Menu" onclick="openMenu()">&#9776;</button>
+  <button id="backBtn" aria-label="Previous photo" onclick="backPhoto()" disabled>&#8592;</button>
 
   <div class="row">
     <button class="imgbtn" onclick="drawTile()" aria-label="New tile">
@@ -296,11 +306,33 @@
       const t = parseTile(cfg.tiles[i]);
       $("tile").src = tileSVG(t.letter, t.bg, t.fg);
     }
-    function drawPhoto() {
-      const i = nextIndex("photo", cfg.photos.length);
-      if (i < 0) { $("photo").removeAttribute("src"); return; }
-      $("photo").src = cfg.photos[i];
-    }
+
+	const history = [];          // photos shown before the current one
+	let currentPhoto = null;
+	const HISTORY_MAX = 30;
+	
+	function drawPhoto() {
+	  const i = nextIndex("photo", cfg.photos.length);
+	  if (i < 0) { $("photo").removeAttribute("src"); return; }
+	  if (currentPhoto) {
+	    history.push(currentPhoto);
+	    if (history.length > HISTORY_MAX) history.shift();
+	  }
+	  currentPhoto = cfg.photos[i];
+	  $("photo").src = currentPhoto;
+	  updateBack();
+	}
+	
+	function backPhoto() {
+	  if (!history.length) return;
+	  currentPhoto = history.pop();
+	  $("photo").src = currentPhoto;
+	  updateBack();
+	}
+	
+	function updateBack() { $("backBtn").disabled = history.length === 0; }
+	
+		  
 	function fitPhoto() {
 		const img = $("photo"), box = $("photoBtn");
 		const on = cfg.rotate && img.naturalWidth > 0;
