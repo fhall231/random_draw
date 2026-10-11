@@ -177,16 +177,16 @@
         const saved = JSON.parse(localStorage.getItem(KEY));
         if (saved) {
           if (typeof saved.deck === "boolean") out.deck = saved.deck;
-          for (const k of ["texts", "photos"]) {
+          for (const k of ["texts"]) {
             if (Array.isArray(saved[k])) out[k] = saved[k].map(String);
           }
         }
       } catch (e) {}
       return out;
     }
-    function save() {
-      try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch (e) {}
-    }
+	function save() {
+	  try { localStorage.setItem(KEY, JSON.stringify({ deck: cfg.deck, texts: cfg.texts })); } catch (e) {}
+	}
 
     // ---------------------------------------------------------------
     // Picking: random with no immediate repeat, or "deck" (no repeats
@@ -290,7 +290,6 @@
     function fillMenu(src) {
       $("deckMode").checked = src.deck;
       $("textsBox").value   = src.texts.join("\n");
-      $("photosBox").value  = src.photos.join("\n");
     }
     const lines = s => s.split("\n").map(x => x.trim()).filter(Boolean);
 
@@ -301,7 +300,7 @@
         deck:   $("deckMode").checked,
         texts:  lines($("textsBox").value),
         tiles:  DEFAULTS.tiles,
-        photos: lines($("photosBox").value),
+        photos: DEFAULTS.photos,
       };
       save();
       resetState();
