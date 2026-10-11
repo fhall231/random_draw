@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Rewrite the photos list in items.js from the pictures found in img/.
 
-Usage (from the project folder):   python3 update_photos.py
+Usage (from the project folder):   python3 update_imglist.py
 
 items.js must contain these two marker lines inside the photos array:
-    // AUTO-PHOTOS-START
-    // AUTO-PHOTOS-END
+    // AUTO-IMG-START
+    // AUTO-IMG-END
 Everything between them is replaced; the rest of the file is left untouched.
 """
 import json
@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent
 IMG_DIR = ROOT / "img"
 ITEMS = ROOT / "items.js"
 EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
-START, END = "// AUTO-PHOTOS-START", "// AUTO-PHOTOS-END"
+START, END = "// AUTO-IMG-START", "// AUTO-IMG-END"
 
 
 def main():
