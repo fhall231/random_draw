@@ -24,7 +24,7 @@ const DEFAULTS = {
 		"C^♯ | #000000 | #eee",
     ],
 
-    photos: ["img/eg1.png", "img/snail.png",],
+    photos: ["img/eg1.png", "img/snail.png","img/ms.svg","img/equation.svg"],
 
 };
 
