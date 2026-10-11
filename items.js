@@ -30,7 +30,6 @@ const DEFAULTS = {
       "img/eg1.png",
       "img/equation.svg",
       "img/geco.jpg",
-      "img/ico.png",
       "img/ms.svg",
       "img/ms_1.svg",
       "img/snail.png",
