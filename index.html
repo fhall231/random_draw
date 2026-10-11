@@ -15,6 +15,7 @@
       --border:  #000;
       --text:    #ddd;
       --word:    #eee;   /* colour of the word in the text box */
+	  --w: 500px;     /* width of the whole layout */
     }
 
     body {
@@ -44,13 +45,13 @@
     }
 
     /* ---------- main layout ---------- */
-    .row {
-      display: flex;
-      gap: 1rem;
-      align-items: stretch;
-      width: min(530px, 100%);
-      margin: 0 auto 1.5rem;
-    }
+	.row {
+	  display: flex;
+	  gap: 1rem;
+	  align-items: stretch;
+	  width: min(var(--w), 100%);
+	  margin: 0 auto 1.5rem;
+	}
 
     .imgbtn {
       display: block;
@@ -61,12 +62,12 @@
       line-height: 0;
     }
     .row .imgbtn { flex: none; margin: 0; }
-    .imgbtn.wide { width: min(500px, 100%); margin: 0 auto; }
+    .imgbtn.wide { width: min(var(--w), 100%); margin: 0 auto; }
 
     #tile  { width: 90px; height: 90px; border-radius: 9px; }
     #photo {
       width: 100%;
-      aspect-ratio: 500 / 230;
+      aspect-ratio: 530 / 230;
       object-fit: cover;
       border-radius: 0px;
       background: var(--panel);
@@ -78,7 +79,7 @@
       margin: 0;
       padding: 0 0.8rem;
       font-family: "CMU Serif", Georgia, serif;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       line-height: 1.2;
       color: var(--word);
       background: var(--panel);
