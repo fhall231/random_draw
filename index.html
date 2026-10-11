@@ -107,12 +107,13 @@
 		  .replace(/_(\w|\{[^}]+\})/g, (m, s) =>
 		    `<tspan dy="45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="-45">\u200B</tspan>`);
 
-		const svg =
-		`<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
-		`<rect width="220" height="220" fill="${color}"/>` +
-		`<text x="110" y="145" font-size="110" text-anchor="middle" fill="${textColor}">${letter}</text>` +
-		`</svg>`;
-		return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+	  const svg =
+	    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
+	    `<rect width="220" height="220" fill="${color}"/>` +
+	    `<text x="110" y="145" font-size="100" text-anchor="middle" fill="${textColor}">${label}</text>` +
+	    `</svg>`;
+	  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+	}
 	}
 
     const texts = ["Major (Ionian)", "Melodic minor", "Harmonic minor", "Major pentatonic", "Minor pentatonic",
