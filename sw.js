@@ -1,13 +1,16 @@
 importScripts("items.js");
 
-const CACHE = "random-draw-v4";
-const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png","./items.js",
-               "./img/snail.png","./img/smail.png","./img/eg1.png","./img/ms.svg","./img/equation.svg"       
-              ];
+const CACHE = "random-draw-v5";    // bumped, since the file changes
+const CORE  = ["./", "./index.html", "./items.js", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const FILES = [...CORE, ...DEFAULTS.photos.map(p => "./" + p)];
 
 self.addEventListener("install", e => {
   self.skipWaiting();  // don't wait for old tabs to close
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
+  e.waitUntil(
+    caches.open(CACHE).then(c =>
+      Promise.all(FILES.map(f => c.add(f).catch(() => {})))   // a missing file no longer breaks the install
+    )
+  );
 });
 
 self.addEventListener("activate", e => {
