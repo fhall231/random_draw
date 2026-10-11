@@ -16,7 +16,7 @@ const DEFAULTS = {
   texts: ["Major (Ionian)", "Melodic minor", "Harmonic minor", "Major pentatonic", "Minor pentatonic",
 		  "Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","Altered","Mixolydian ♭6","whole-tone"],
 
-  tiles: [
+  tiles: [    // letter | background | letter colour | weight (optional)
 		"C♭ | #333 | #eee | 0.2",
 		"G♭ | #0ef | #000 | 0.5",
 		"D♭ | #fa6 | #000 | 0.5",
