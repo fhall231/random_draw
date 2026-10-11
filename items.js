@@ -1,5 +1,15 @@
 // Default content: edit this to change the lists
 
+const THEME = {
+  bg:     "#000000",   // page background
+  panel:  "#000000",   // text box, menu and button background
+  border: "#000000",   // outlines
+  text:   "#dddddd",   // general text
+  word:   "#eeeeee",   // the drawn word
+  muted:  "#94a3b8",   // small hint text in the menu
+  accent: "#0d9488",   // Save button
+};
+
 const DEFAULTS = {
   deck: false,
   
