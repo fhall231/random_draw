@@ -156,10 +156,6 @@
     <small>Use ^2 for a superscript and _2 for a subscript; use braces for several characters, e.g. x^{10}.</small>
     <textarea id="textsBox" spellcheck="false"></textarea>
 
-    <label class="block" for="tilesBox">Tiles (one per line)</label>
-    <small>Format: <b>letter | background | letter colour</b>. The last two are optional, e.g. <b>c^2 | #eab308 | #1e293b</b></small>
-    <textarea id="tilesBox" spellcheck="false"></textarea>
-
     <label class="block" for="photosBox">Photos (file paths, one per line)</label>
     <small>Files must already be in your repo, e.g. img/photo1.jpg</small>
     <textarea id="photosBox" spellcheck="false"></textarea>
@@ -186,7 +182,7 @@
         const saved = JSON.parse(localStorage.getItem(KEY));
         if (saved) {
           if (typeof saved.deck === "boolean") out.deck = saved.deck;
-          for (const k of ["texts", "tiles", "photos"]) {
+          for (const k of ["texts", "photos"]) {
             if (Array.isArray(saved[k])) out[k] = saved[k].map(String);
           }
         }
@@ -299,7 +295,6 @@
     function fillMenu(src) {
       $("deckMode").checked = src.deck;
       $("textsBox").value   = src.texts.join("\n");
-      $("tilesBox").value   = src.tiles.join("\n");
       $("photosBox").value  = src.photos.join("\n");
     }
     const lines = s => s.split("\n").map(x => x.trim()).filter(Boolean);
@@ -310,7 +305,7 @@
       cfg = {
         deck:   $("deckMode").checked,
         texts:  lines($("textsBox").value),
-        tiles:  lines($("tilesBox").value),
+        tiles:  DEFAULTS.tiles,
         photos: lines($("photosBox").value),
       };
       save();
