@@ -29,7 +29,7 @@ const DEFAULTS = {
      // AUTO-PHOTOS-START
      "img/snail.png",
      // AUTO-PHOTOS-END
-   ],
+    ],
 
 };
 
