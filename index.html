@@ -81,7 +81,6 @@
 	    transform: translate(-50%, -50%) rotate(90deg);
     }
 
-    #tile.rot { transform: rotate(90deg); }
     .textbox {
       flex: 1;
       min-width: 0;
@@ -109,7 +108,7 @@
       border: 1px solid var(--border);
       border-radius: 12px;
     }
-    dialog::backdrop { background: rgba(0, 0, 50, 0.65); }
+    dialog::backdrop { background: rgba(9,9,9,0.65); }
     dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
     dialog label.block { display: block; margin: 1rem 0 0.3rem; font-weight: bold; }
     dialog small { display: block; margin-bottom: 0.4rem; color: #94a3b8; }
@@ -135,7 +134,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
     }
-    .actions button.primary { background: #0d9488; border-color: #0d9488; color: white; }
+    .actions button.primary { background: #0d9488; border-color: #098; color: white; }
     .actions .spacer { flex: 1; }
   </style>
 </head>
@@ -261,7 +260,7 @@
 	const TILE_FONT = 110;   // same size for every tile
     function tileSVG(letter, bg, fg) {
 	  const size = TILE_FONT;
- 	  const up = Math.round(size * 0.25), small = Math.round(size * 0.65);
+ 	  const up = Math.round(size*0.3), small = Math.round(size*0.7);
   	  const y  = Math.round(100 + size * 0.45);
       const label = esc(letter)
 		.replace(SUP, (m, s) => `<tspan dy="-${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="${up}">\u200B</tspan>`)
@@ -301,7 +300,6 @@
     }
 	function fitPhoto() {
 		const img = $("photo"), box = $("photoBtn");
-		$("tile").classList.toggle("rot", cfg.rotate);          // the tile icon just turns in place
 		const on = cfg.rotate && img.naturalWidth > 0;
 		img.classList.toggle("rot", on);
 		if (!on) {
