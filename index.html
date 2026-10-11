@@ -6,161 +6,320 @@
   <title>Random Draw</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#000011">
 
   <style>
+    :root {
+      --bg:      #000011;
+      --panel:   #0b1330;
+      --border:  #334155;
+      --text:    #e5e7eb;
+      --word:    #f87171;   /* colour of the word in the text box */
+    }
+
     body {
       font-family: sans-serif;
       text-align: center;
       margin: 0;
-      padding: 1.5rem 1rem 3rem;
-      background: #000000;
-      color: #e5e7eb;
+      padding: 3.5rem 1rem 3rem;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    button {
-      -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+    /* ---------- menu button (top right) ---------- */
+    #menuBtn {
+      position: fixed;
+      top: 0.6rem;
+      right: 0.6rem;
+      width: 44px;
+      height: 44px;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
     }
 
-    /* Text in a box that works as a button */
-    .textbox {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.8rem;
-      color: #e5e7e7;
-      min-width: 220px;
-      padding: 0.8rem 2rem;
-      margin: 1rem 0 1.5rem;
-      background: #000000;
-      border: 1px solid #111111;
-      border-radius: 7px;
+    /* ---------- main layout ---------- */
+    .row {
+      display: flex;
+      gap: 1rem;
+      align-items: stretch;
+      width: min(500px, 100%);
+      margin: 0 auto 1.5rem;
     }
-    .textbox:active { background: #000000; }
 
-    /* Images that work as buttons */
     .imgbtn {
       display: block;
-      margin: 0 auto 1.5rem;
       padding: 0;
       background: none;
       border: none;
-      border-radius: 0px;
-      line-height: 0;            /* removes the small gap under the image */
-    }
-    .imgbtn:active { transform: scale(0.97); }
-
-    #tile {
-      width: 110px;
-      height: 110px;
       border-radius: 10px;
+      line-height: 0;
     }
+    .row .imgbtn { flex: none; margin: 0; }
+    .imgbtn.wide { width: min(500px, 100%); margin: 0 auto; }
 
-    .imgbtn.wide { width: min(500px, 100%); }
+    #tile  { width: 110px; height: 110px; border-radius: 10px; }
     #photo {
       width: 100%;
       aspect-ratio: 500 / 230;
-      object-fit: cover;         /* crops to fit instead of stretching */
-      border-radius: 0px;
-      background: #0b1330;       /* shown while the image loads */
+      object-fit: cover;
+      border-radius: 10px;
+      background: var(--panel);
     }
 
-	.row {
-	  display: flex;
-	  gap: 1rem;
-	  align-items: stretch;
-	  width: min(500px, 100%);
-	  margin: 0 auto 1.5rem;
-	}
-	.row .imgbtn {
-	  margin: 0;
-	  flex: none;
-	}
-	.row .textbox {
-	  flex: 1;
-	  min-width: 0;
-	  margin: 0;
-	  padding: 0 1rem;
-	}
+    .textbox {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      padding: 0 0.8rem;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.6rem;
+      line-height: 1.2;
+      color: var(--word);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    sup, sub { line-height: 0; }
+
+    /* ---------- menu dialog ---------- */
+    dialog {
+      width: min(560px, 92vw);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 1rem 1.2rem 1.2rem;
+      text-align: left;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+    dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
+    dialog label.block { display: block; margin: 1rem 0 0.3rem; font-weight: bold; }
+    dialog small { display: block; margin-bottom: 0.4rem; color: #94a3b8; }
+    dialog textarea {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 7rem;
+      padding: 0.5rem;
+      font: 0.95rem/1.4 monospace;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    dialog .check { display: flex; gap: 0.6rem; align-items: center; margin: 0.4rem 0; }
+    dialog .check input { width: 1.3rem; height: 1.3rem; }
+    .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .actions button {
+      padding: 0.6rem 1.1rem;
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .actions button.primary { background: #0d9488; border-color: #0d9488; color: white; }
+    .actions .spacer { flex: 1; }
   </style>
 </head>
 
 <body>
-	<div class="row">
-	  <button class="imgbtn" onclick="drawTile()" aria-label="New tile">
-		<img id="tile" alt="">
-	  </button>
-	  <button class="textbox" id="label" onclick="drawText()"></button>
-	</div>
+  <button id="menuBtn" aria-label="Menu" onclick="openMenu()">&#9776;</button>
 
-	<button class="imgbtn wide" onclick="drawPhoto()" aria-label="New photo">
-	<img id="photo" alt="">
-	</button>
+  <div class="row">
+    <button class="imgbtn" onclick="drawTile()" aria-label="New tile">
+      <img id="tile" alt="">
+    </button>
+    <button class="textbox" id="label" onclick="drawText()"></button>
+  </div>
 
+  <button class="imgbtn wide" onclick="drawPhoto()" aria-label="New photo">
+    <img id="photo" alt="">
+  </button>
+
+  <dialog id="menu">
+    <h2>Settings</h2>
+
+    <div class="check">
+      <input type="checkbox" id="deckMode">
+      <label for="deckMode">No-repeat mode (go through every item once before any repeats)</label>
+    </div>
+
+    <label class="block" for="textsBox">Words (one per line)</label>
+    <small>Use ^2 for a superscript and _2 for a subscript; use braces for several characters, e.g. x^{10}.</small>
+    <textarea id="textsBox" spellcheck="false"></textarea>
+
+    <label class="block" for="tilesBox">Tiles (one per line)</label>
+    <small>Format: <b>letter | background | letter colour</b>. The last two are optional, e.g. <b>c^2 | #eab308 | #1e293b</b></small>
+    <textarea id="tilesBox" spellcheck="false"></textarea>
+
+    <label class="block" for="photosBox">Photos (file paths, one per line)</label>
+    <small>Files must already be in your repo, e.g. img/photo1.jpg</small>
+    <textarea id="photosBox" spellcheck="false"></textarea>
+
+    <div class="actions">
+      <button class="primary" onclick="saveMenu()">Save</button>
+      <button onclick="closeMenu()">Cancel</button>
+      <span class="spacer"></span>
+      <button onclick="fillMenu(DEFAULTS)">Defaults</button>
+    </div>
+  </dialog>
+  <script src="items.js"></script>
   <script>
-    // Generated tile images (colored square with a letter)
-  	function placeholder(color, letter, textColor) {
-	  const label = letter
-	    .replace(/\^([^\s{}^_]|\{[^}]+\})/gu, (m, s) =>
-		`<tspan dy="-25" font-size="70">${s.replace(/[{}]/g, "")}</tspan><tspan dy="10">\u200B</tspan>`)
-	    .replace(/_([^\s{}^_]|\{[^}]+\})/gu, (m, s) =>
-		`<tspan dy="10" font-size="70">${s.replace(/[{}]/g, "")}</tspan><tspan dy="-25">\u200B</tspan>`);
-	
-	  const svg =
-	    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
-	    `<rect width="220" height="220" fill="${color}"/>` +
-	    `<text x="110" y="145" font-size="90" text-anchor="middle" fill="${textColor}">${label}</text>` +
-	    `</svg>`;
-	  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-	}
 
-    const texts = ["Major (Ionian)", "Melodic minor", "Harmonic minor", "Major pentatonic", "Minor pentatonic",
-				   "Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","Altered","Mixolydian ♭6"];
+	// ---------------------------------------------------------------
+    // Saved settings (localStorage, wrapped so a failure never breaks the page)
+    // ---------------------------------------------------------------
+    const KEY = "randomdraw.v1";
+    let cfg = load();
 
-    const tiles = [
-		placeholder("#7c3aed", "C_♭", "#000000"),
-		placeholder("#7c3aed", "G_♭", "#000000"),
-		placeholder("#e11d48", "D_♭", "#003300"),
-		placeholder("#9f1239", "A_♭", "#000000"),
-		placeholder("#eab308", "E_♭", "#aa0000"),
-		placeholder("#eab308", "B_♭", "#0000aa"),
-		placeholder("#eeeeee", "F", "#000000"),
-		placeholder("#eeeeee", "C", "#000000"),
-		placeholder("#eab308", "G", "#000000"),
-		placeholder("#9f1239", "D", "#000000"),
-		placeholder("#7c3aed", "A", "#000000"),
-		placeholder("#e11d48", "E", "#000000"),
-		placeholder("#eab308", "B", "#000000"),
-		placeholder("#9f1239", "F^♯", "#000000"),
-		placeholder("#9f1239", "C^♯", "#000000"),
-    ];
-
-    // EDIT THIS: the file names of the pictures in your img/ folder
-    const photos = [
-      "img/eg1.png",
-      "img/snail.png",
-    ];
-
-    // Remember the previous pick of each list to avoid immediate repeats
-    const last = { text: -1, tile: -1, photo: -1 };
-
-    function pick(list, key) {
-      let i;
-      do {
-        i = Math.floor(Math.random() * list.length);
-      } while (i === last[key] && list.length > 1);
-      last[key] = i;
-      return list[i];
+    function load() {
+      const out = JSON.parse(JSON.stringify(DEFAULTS));
+      try {
+        const saved = JSON.parse(localStorage.getItem(KEY));
+        if (saved) {
+          if (typeof saved.deck === "boolean") out.deck = saved.deck;
+          for (const k of ["texts", "tiles", "photos"]) {
+            if (Array.isArray(saved[k])) out[k] = saved[k].map(String);
+          }
+        }
+      } catch (e) {}
+      return out;
+    }
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch (e) {}
     }
 
-    function drawText() { document.getElementById("label").innerHTML = pick(texts, "text"); }
-    function drawTile()  { document.getElementById("tile").src  = pick(tiles, "tile"); }
-    function drawPhoto() { document.getElementById("photo").src = pick(photos, "photo"); }
+    // ---------------------------------------------------------------
+    // Picking: random with no immediate repeat, or "deck" (no repeats
+    // until every item has been shown, then reshuffle).
+    // ---------------------------------------------------------------
+    const state = {};   // per list: { last, deck }
+    function resetState() {
+      for (const k of ["text", "tile", "photo"]) state[k] = { last: -1, deck: [] };
+    }
+    resetState();
 
-    // Draw everything on load
-    drawText();
-    drawTile();
-    drawPhoto();
+    function shuffledDeck(n, avoid) {
+      const a = Array.from({ length: n }, (_, i) => i);
+      for (let i = n - 1; i > 0; i--) {                 // Fisher-Yates
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      // draws come from the END, so keep the previous pick from being drawn first
+      if (n > 1 && a[n - 1] === avoid) {
+        const j = Math.floor(Math.random() * (n - 1));
+        [a[n - 1], a[j]] = [a[j], a[n - 1]];
+      }
+      return a;
+    }
 
+    function nextIndex(key, n) {
+      if (n === 0) return -1;
+      const s = state[key];
+      if (n === 1) { s.last = 0; return 0; }
+      if (cfg.deck) {
+        if (s.deck.length === 0) s.deck = shuffledDeck(n, s.last);
+        s.last = s.deck.pop();
+      } else {
+        let i;
+        do { i = Math.floor(Math.random() * n); } while (i === s.last);
+        s.last = i;
+      }
+      return s.last;
+    }
+
+    // ---------------------------------------------------------------
+    // Text formatting: ^ superscript, _ subscript (works for any character)
+    // ---------------------------------------------------------------
+    const SUP = /\^([^\s{}^_]|\{[^}]+\})/gu;
+    const SUB = /_([^\s{}^_]|\{[^}]+\})/gu;
+    const esc   = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const strip = s => s.replace(/[{}]/g, "");
+
+    function toHTML(raw) {
+      return esc(raw)
+        .replace(SUP, (m, s) => `<sup>${strip(s)}</sup>`)
+        .replace(SUB, (m, s) => `<sub>${strip(s)}</sub>`);
+    }
+
+    function tileSVG(letter, bg, fg) {
+      const plain = letter.replace(/[\^_{}]/g, "").length;
+      const size  = plain <= 1 ? 110 : plain === 2 ? 90 : plain === 3 ? 70 : 55;
+      const up = Math.round(size * 0.45), small = Math.round(size * 0.55);
+      const y  = Math.round(110 + size * 0.32);
+      const label = esc(letter)
+        .replace(SUP, (m, s) => `<tspan dy="-${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="${up}">​</tspan>`)
+        .replace(SUB, (m, s) => `<tspan dy="${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="-${up}">​</tspan>`);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
+        `<rect width="220" height="220" fill="${esc(bg)}"/>` +
+        `<text x="110" y="${y}" font-size="${size}" text-anchor="middle" fill="${esc(fg)}">${label}</text>` +
+        `</svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function parseTile(line) {
+      const p = line.split("|").map(s => s.trim());
+      return { letter: p[0] || "?", bg: p[1] || "#475569", fg: p[2] || "white" };
+    }
+
+    // ---------------------------------------------------------------
+    // Drawing
+    // ---------------------------------------------------------------
+    const $ = id => document.getElementById(id);
+
+    function drawText() {
+      const i = nextIndex("text", cfg.texts.length);
+      $("label").innerHTML = i < 0 ? "&mdash;" : toHTML(cfg.texts[i]);
+    }
+    function drawTile() {
+      const i = nextIndex("tile", cfg.tiles.length);
+      if (i < 0) { $("tile").removeAttribute("src"); return; }
+      const t = parseTile(cfg.tiles[i]);
+      $("tile").src = tileSVG(t.letter, t.bg, t.fg);
+    }
+    function drawPhoto() {
+      const i = nextIndex("photo", cfg.photos.length);
+      if (i < 0) { $("photo").removeAttribute("src"); return; }
+      $("photo").src = cfg.photos[i];
+    }
+    function drawAll() { drawText(); drawTile(); drawPhoto(); }
+
+    // ---------------------------------------------------------------
+    // Menu
+    // ---------------------------------------------------------------
+    function fillMenu(src) {
+      $("deckMode").checked = src.deck;
+      $("textsBox").value   = src.texts.join("\n");
+      $("tilesBox").value   = src.tiles.join("\n");
+      $("photosBox").value  = src.photos.join("\n");
+    }
+    const lines = s => s.split("\n").map(x => x.trim()).filter(Boolean);
+
+    function openMenu()  { fillMenu(cfg); $("menu").showModal(); }
+    function closeMenu() { $("menu").close(); }
+    function saveMenu() {
+      cfg = {
+        deck:   $("deckMode").checked,
+        texts:  lines($("textsBox").value),
+        tiles:  lines($("tilesBox").value),
+        photos: lines($("photosBox").value),
+      };
+      save();
+      resetState();
+      drawAll();
+      closeMenu();
+    }
+
+    drawAll();
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
   </script>
 </body>
