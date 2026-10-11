@@ -27,7 +27,6 @@ const DEFAULTS = {
     //photos: ["img/eg1.png", "img/snail.png","img/ms.svg","img/equation.svg"],
 	photos: [
       // AUTO-IMG-START
-      "img/eg1.png",
       "img/equation.svg",
       "img/geco.jpg",
       "img/ms.svg",
