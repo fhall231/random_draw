@@ -228,34 +228,60 @@
     }
     resetState();
 
-    function shuffledDeck(n, avoid) {
-      const a = Array.from({ length: n }, (_, i) => i);
-      for (let i = n - 1; i > 0; i--) {                 // Fisher-Yates
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      // draws come from the END, so keep the previous pick from being drawn first
-      if (n > 1 && a[n - 1] === avoid) {
-        const j = Math.floor(Math.random() * (n - 1));
-        [a[n - 1], a[j]] = [a[j], a[n - 1]];
-      }
-      return a;
-    }
 
-    function nextIndex(key, n) {
-      if (n === 0) return -1;
-      const s = state[key];
-      if (n === 1) { s.last = 0; return 0; }
-      if (cfg.deck) {
-        if (s.deck.length === 0) s.deck = shuffledDeck(n, s.last);
-        s.last = s.deck.pop();
-      } else {
-        let i;
-        do { i = Math.floor(Math.random() * n); } while (i === s.last);
-        s.last = i;
-      }
-      return s.last;
-    }
+
+	function parseWord(line) {
+	  const m = line.match(/^(.+?)\s*\|\s*(\d+(?:\.\d+)?)\s*$/);
+	  return m ? { text: m[1], w: parseFloat(m[2]) } : { text: line, w: 1 };
+	}
+	
+	// counts[i] = how many copies of item i go in the deck
+	function shuffledDeck(counts, avoid) {
+	  const a = [];
+	  counts.forEach((c, i) => { for (let k = 0; k < c; k++) a.push(i); });
+	  if (a.length === 0) counts.forEach((_, i) => a.push(i));
+	  for (let i = a.length - 1; i > 0; i--) {              // Fisher-Yates
+	    const j = Math.floor(Math.random() * (i + 1));
+	    [a[i], a[j]] = [a[j], a[i]];
+	  }
+	  // draws come from the END, so keep the previous pick from being drawn first
+	  if (a.length > 1 && a[a.length - 1] === avoid) {
+	    const j = a.findIndex(x => x !== avoid);
+	    if (j >= 0) [a[a.length - 1], a[j]] = [a[j], a[a.length - 1]];
+	  }
+	  return a;
+	}
+	
+	function weightedPick(w, avoid) {
+	  let total = 0, lastOk = -1;
+	  for (let i = 0; i < w.length; i++) {
+	    if (i !== avoid) { total += w[i]; if (w[i] > 0) lastOk = i; }
+	  }
+	  if (total <= 0) return avoid >= 0 ? avoid : 0;
+	  let r = Math.random() * total;
+	  for (let i = 0; i < w.length; i++) {
+	    if (i === avoid) continue;
+	    r -= w[i];
+	    if (r < 0) return i;
+	  }
+	  return lastOk;
+	}
+	
+	function nextIndex(key, n, weights) {
+	  if (n === 0) return -1;
+	  let w = weights || Array(n).fill(1);
+	  if (!w.some(x => x > 0)) w = w.map(() => 1);          // all zero: treat as equal
+	  const s = state[key];
+	  if (n === 1) { s.last = 0; return 0; }
+	  if (cfg.deck) {
+	    if (s.deck.length === 0) s.deck = shuffledDeck(w.map(Math.round), s.last);
+	    s.last = s.deck.pop();
+	  } else {
+	    const uniform = w.every(x => x === w[0]);
+	    s.last = weightedPick(w, uniform ? s.last : -1);
+	  }
+	  return s.last;
+	}
 
     // ---------------------------------------------------------------
     // Text formatting: ^ superscript, _ subscript (works for any character)
@@ -297,10 +323,11 @@
     // ---------------------------------------------------------------
     const $ = id => document.getElementById(id);
 
-    function drawText() {
-      const i = nextIndex("text", cfg.texts.length);
-      $("label").innerHTML = i < 0 ? "&mdash;" : toHTML(cfg.texts[i]);
-    }
+	function drawText() {
+	  const items = cfg.texts.map(parseWord);
+	  const i = nextIndex("text", items.length, items.map(x => x.w));
+	  $("label").innerHTML = i < 0 ? "&mdash;" : toHTML(items[i].text);
+	}
     function drawTile() {
       const i = nextIndex("tile", cfg.tiles.length);
       if (i < 0) { $("tile").removeAttribute("src"); return; }
