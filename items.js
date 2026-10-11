@@ -26,9 +26,9 @@ const DEFAULTS = {
 
     //photos: ["img/eg1.png", "img/snail.png","img/ms.svg","img/equation.svg"],
 	photos: [
-     // AUTO-PHOTOS-START
+     // AUTO-IMG-START
      "img/snail.png",
-     // AUTO-PHOTOS-END
+     // AUTO-IMG-END
     ],
 
 };
