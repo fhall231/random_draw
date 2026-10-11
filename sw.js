@@ -1,6 +1,6 @@
 importScripts("items.js");
 
-const CACHE = "random-draw-v6";    // bumped, since the file changes
+const CACHE = "random-draw-v6";    // bumpe when file changes
 const CORE  = ["./", "./index.html", "./items.js", "./manifest.json", "./ico/icon-192.png", "./ico/icon-512.png"];
 const FILES = [...CORE, ...DEFAULTS.photos.map(p => "./" + p)];
 
