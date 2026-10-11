@@ -98,7 +98,7 @@
 
   <script>
     // Generated tile images (colored square with a letter)
-  function placeholder(color, letter, textColor) {
+  	function placeholder(color, letter, textColor) {
 	  const label = letter
 	    .replace(/\^(\w|\{[^}]+\})/g, (m, s) =>
 	      `<tspan dy="-45" font-size="60">${s.replace(/[{}]/g, "")}</tspan><tspan dy="45">\u200B</tspan>`)
