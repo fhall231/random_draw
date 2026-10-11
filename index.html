@@ -10,12 +10,15 @@
 
   <style>
     :root {
-      --bg:      #000;
+      --bg:      #000;    /* defaults overridden by THEME */
       --panel:   #000;
       --border:  #000;
       --text:    #ddd;
-      --word:    #eee;   /* colour of the word in the text box */
-	  --w: 520px;     /* width of the whole layout */
+      --word:    #eee;
+	  --muted:  #94a3b8;
+      --accent: #0d9488;
+      --w: 520px;     /* width of the whole layout */
+
     }
 
     body {
@@ -111,7 +114,7 @@
     dialog::backdrop { background: rgba(9,9,9,0.65); }
     dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
     dialog label.block { display: block; margin: 1rem 0 0.3rem; font-weight: bold; }
-    dialog small { display: block; margin-bottom: 0.4rem; color: #94a3b8; }
+    dialog small { display: block; margin-bottom: 0.4rem; color: var(--muted); }
     dialog textarea {
       width: 100%;
       box-sizing: border-box;
@@ -134,7 +137,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
     }
-    .actions button.primary { background: #0d9488; border-color: #098; color: white; }
+    .actions button.primary { background: var(--accent); border-color: var(--accent); }
     .actions .spacer { flex: 1; }
   </style>
 </head>
@@ -348,6 +351,10 @@
 	}
 	$("photo").onload = fitPhoto;
     window.addEventListener("resize", fitPhoto);
+	for (const [k, v] of Object.entries(THEME)) {
+		document.documentElement.style.setProperty("--" + k, v);
+	}
+	document.querySelector('meta[name="theme-color"]').content = THEME.bg;
     drawAll();
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
   </script>
