@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rewrite the photos list in items.js from the pictures found in img/.
 
-Usage (from the project folder):   python3 update_imglist.py
+Usage (from the project folder):   python3 ud_items.py
 
 items.js must contain these two marker lines inside the photos array:
     // AUTO-IMG-START
