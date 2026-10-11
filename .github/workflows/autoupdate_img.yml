@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 update_imglist.py
+      - run: python3 ud_items.py
       - name: Commit if the list changed
         run: |
           if ! git diff --quiet items.js; then
