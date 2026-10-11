@@ -8,9 +8,9 @@ const DEFAULTS = {
 
   tiles: [
 		"C♭ | #333 | #eee",
-		"G♭ | #096 | #eee",
+		"G♭ | #0ef | #000",
 		"D♭ | #fa6 | #000",
-		"A♭ | #eaf | #eee",
+		"A♭ | #a03 | #eee",
 		"E♭ | #f60 | #eee",
 		"B♭ | #90f | #eee",
 		"F  | #080 | #eee",
