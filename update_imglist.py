@@ -21,14 +21,12 @@ START, END = "// AUTO-IMG-START", "// AUTO-IMG-END"
 
 
 def main():
-    if not IMG_DIR.is_dir():
-        sys.exit(f"Folder not found: {IMG_DIR}")
     if not ITEMS.is_file():
         sys.exit(f"File not found: {ITEMS}")
 
     files = sorted(
         (p.relative_to(ROOT).as_posix()
-         for p in IMG_DIR.rglob("*")
+         for p in (IMG_DIR.rglob("*") if IMG_DIR.is_dir() else [])
          if p.is_file() and p.suffix.lower() in EXTS),
         key=str.lower,
     )
