@@ -34,7 +34,7 @@
       position: fixed;
       top: 0.5rem;
       right: 0.5rem;
-      width: 35px;
+      width: 37px;
       height: 35px;
       font-size: 1.4rem;
       line-height: 1;
@@ -99,7 +99,7 @@
 
     /* ---------- menu dialog ---------- */
     dialog {
-      width: min(560px, 92vw);
+      width: min(520px, 92vw);
       max-height: 90vh;
       overflow: auto;
       padding: 1rem 1.2rem 1.2rem;
@@ -109,7 +109,7 @@
       border: 1px solid var(--border);
       border-radius: 12px;
     }
-    dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+    dialog::backdrop { background: rgba(0, 0, 0.2, 0.65); }
     dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
     dialog label.block { display: block; margin: 1rem 0 0.3rem; font-weight: bold; }
     dialog small { display: block; margin-bottom: 0.4rem; color: #94a3b8; }
@@ -159,12 +159,12 @@
 
     <div class="check">
       <input type="checkbox" id="deckMode">
-      <label for="deckMode">No-repeat mode (go through every item once before any repeats)</label>
+      <label for="deckMode">No-repeat mode <small>(go through every item once before reshuffling)</small></label>
     </div>
 
 	<div class="check">
 		<input type="checkbox" id="rotateMode">
-		<label for="rotateMode">Rotate images 90&deg; (photo and tile; the text box stays upright)</label>
+		<label for="rotateMode">Rotate images 90&deg; </label>
 	</div>
 
     <label class="block" for="textsBox">keywords (one per line)</label>
