@@ -62,7 +62,7 @@
       line-height: 0;
     }
     .row .imgbtn { flex: none; margin: 0; }
-    .imgbtn.wide { width: min(var(--w), 100%); margin: 0 auto; }
+    .imgbtn.wide { width: min(var(--w), 100%); margin: 0 auto; position: relative;}
 
     #tile  { width: 90px; height: 90px; border-radius: 9px; }
     #photo {
@@ -72,6 +72,16 @@
       object-fit: contain;
     }
 
+	#photo.rot {
+	    position: absolute;
+	    left: 50%;
+	    top: 50%;
+	    max-width: none;
+	    max-height: none;
+	    transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    #tile.rot { transform: rotate(90deg); }
     .textbox {
       flex: 1;
       min-width: 0;
@@ -140,7 +150,7 @@
     <button class="textbox" id="label" onclick="drawText()"></button>
   </div>
 
-  <button class="imgbtn wide" onclick="drawPhoto()" aria-label="New photo">
+  <button class="imgbtn wide" id="photoBtn" onclick="drawPhoto()" aria-label="New photo">
     <img id="photo" alt="">
   </button>
 
@@ -151,6 +161,11 @@
       <input type="checkbox" id="deckMode">
       <label for="deckMode">No-repeat mode (go through every item once before any repeats)</label>
     </div>
+
+	<div class="check">
+		<input type="checkbox" id="rotateMode">
+		<label for="rotateMode">Rotate images 90&deg; (photo and tile; the text box stays upright)</label>
+	</div>
 
     <label class="block" for="textsBox">keywords (one per line)</label>
     <textarea id="textsBox" spellcheck="false"></textarea>
@@ -173,10 +188,12 @@
 
     function load() {
       const out = JSON.parse(JSON.stringify(DEFAULTS));
+	  out.rotate = out.rotate === true;
       try {
         const saved = JSON.parse(localStorage.getItem(KEY));
         if (saved) {
           if (typeof saved.deck === "boolean") out.deck = saved.deck;
+		  if (typeof saved.rotate === "boolean") out.rotate = saved.rotate;
           for (const k of ["texts"]) {
             if (Array.isArray(saved[k])) out[k] = saved[k].map(String);
           }
@@ -282,6 +299,22 @@
       if (i < 0) { $("photo").removeAttribute("src"); return; }
       $("photo").src = cfg.photos[i];
     }
+	function fitPhoto() {
+		const img = $("photo"), box = $("photoBtn");
+		$("tile").classList.toggle("rot", cfg.rotate);          // the tile icon just turns in place
+		const on = cfg.rotate && img.naturalWidth > 0;
+		img.classList.toggle("rot", on);
+		if (!on) {
+		img.style.width = img.style.height = box.style.width = box.style.height = "";
+		return;
+		}
+		const W = document.querySelector(".row").clientWidth;
+		const maxH = window.innerHeight * 0.7;
+		const nw = img.naturalWidth, nh = img.naturalHeight;
+		const s = Math.min(W / nh, maxH / nw);
+		img.style.width  = nw * s + "px";  img.style.height = nh * s + "px";
+		box.style.width  = nh * s + "px";  box.style.height = nw * s + "px";
+	}
     function drawAll() { drawText(); drawTile(); drawPhoto(); }
 
     // ---------------------------------------------------------------
