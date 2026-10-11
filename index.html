@@ -329,20 +329,25 @@
 
     function openMenu()  { fillMenu(cfg); $("menu").showModal(); }
     function closeMenu() { $("menu").close(); }
-    function saveMenu() {
-      cfg = {
-        deck:   $("deckMode").checked,
-        texts:  lines($("textsBox").value),
-        tiles:  DEFAULTS.tiles,
-        photos: DEFAULTS.photos,
-		rotate: $("rotateMode").checked,
-      };
-      save();
-      resetState();
-      drawAll();
-	  fitPhoto();
-      closeMenu();
-    }
+	function saveMenu() {
+	  const old = cfg;
+	  cfg = {
+	    deck:   $("deckMode").checked,
+	    texts:  lines($("textsBox").value),
+	    tiles:  DEFAULTS.tiles,
+	    photos: DEFAULTS.photos,
+	    rotate: $("rotateMode").checked,
+	  };
+	  save();
+	
+	  // new list or mode: start a fresh deck on the next draw
+	  if (cfg.deck !== old.deck || cfg.texts.join("\n") !== old.texts.join("\n")) {
+	    resetState();
+	  }
+	
+	  fitPhoto();   // applies the rotate checkbox to what's on screen
+	  closeMenu();
+	}
 	$("photo").onload = fitPhoto;
     window.addEventListener("resize", fitPhoto);
     drawAll();
