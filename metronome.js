@@ -1,7 +1,7 @@
 // metronome.js: the metronome (sounds, tempo and volume settings, audio engine).
 //
 // Loaded by index.html after defaults.js and before the main script. It only
-// needs the elements with ids playBtn, bpmOut, bpmLabel, bpmSlider, volSlider and soundSel,
+// needs the elements with ids playBtn, bpmOut, bpmLabel, soundSel, volSlider, (bpmSlider is commented out)
 // and index.html must call initMetro() once at start-up.
 //
 // The sound recipes come first, so they are easy to find and edit.
@@ -114,8 +114,8 @@ function saveMetro() {
 function setBpm(v) {
   metro.bpm = Math.min(BPM_MAX, Math.max(BPM_MIN, Math.round(v)));
   byId("bpmOut").value         = metro.bpm;
-  byId("bpmLabel").textContent = metro.bpm;
-  byId("bpmSlider").value      = metro.bpm;
+  // byId("bpmLabel").textContent = metro.bpm;
+  // byId("bpmSlider").value      = metro.bpm;
   saveMetro();
 }
 // called when the number box is edited and confirmed (Enter, or tapping elsewhere)
