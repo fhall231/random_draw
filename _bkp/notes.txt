@@ -1,0 +1,48 @@
+The changes fall into three parts: HTML for what’s on screen, CSS for how it looks, and JavaScript for what it does. The JavaScript is where the new ideas are.
+
+1. HTML: what appears on screen
+
+I added two things:
+
+The top-left bar: a <div id="metro"> holding the start button, −, the number, and +. The ids are how JavaScript finds elements, as in $("bpmOut"). Each button has an onclick="..." that names the function to run when you tap it.
+Two sliders in the menu: <input type="range"> with min, max and step. oninput fires continuously while you drag, which is why the tempo changes live.
+
+One oddity is &#9654;&#xFE0E; for the play symbol. Some phones draw ▶ as a coloured emoji, and the extra character (FE0E) forces the plain text form.
+
+2. CSS: the look
+Same look as the other buttons: I added #metro button to the selector of the rule that styles the menu and back buttons, so all the top buttons match.
+Position override: that shared rule also says position: fixed, which would pin all three metronome buttons to the same spot. #metro button { position: static; } cancels that, so they sit in a row instead. #metro itself is fixed in the top-left corner, with display: flex to lay out its children in a row.
+Sliders: accent-color tints them with your theme colour, and width: 100% makes them fill the menu.
+3. JavaScript: the logic
+
+Settings. metro = { bpm, volume } is an object. const means the name can’t be reassigned, but the contents can change, so metro.bpm = 120 is fine. It’s saved under its own key (randomdraw.metro) for the reason I mentioned last time. loadMetro() clamps what it reads, with Math.min(BPM_MAX, Math.max(BPM_MIN, ...)). That pattern, a minimum of the maximum, is the idiom for “keep a number inside a range”.
+
+setBpm() and setVolume(). Each clamps the new value, stores it, and updates every place that shows it: the number in the bar, the label in the menu, and the slider. That’s why + moves the slider and the slider moves the number.
+
+Timing, the main idea. A setInterval of 500 ms for 120 BPM would drift, because the browser can run a timer late, and your ear hears that. Instead, the audio system has its own precise clock (audio.currentTime, in seconds). The scheduler works like this:
+
+Every 25 ms a timer wakes scheduler().
+It asks: is the next click due within the next 100 ms?
+If so, it tells the audio system to play a click at an exact time, nextTime, then adds 60 / bpm seconds to nextTime.
+
+The 25 ms timer can be a few milliseconds late, but the 100 ms of advance scheduling hides that. The click time itself comes from the audio clock, not the timer. That’s why the intervals in my test came out as exactly 0.5 and 1.0.
+
+click(time) builds the sound from three parts connected in a chain:
+
+js
+osc.connect(g).connect(audio.destination);
+
+The oscillator makes a 1000 Hz tone, the gain node controls the loudness, and destination is the speakers. The gain starts at the volume and fades to nearly zero over 50 ms (exponentialRampToValueAtTime), which turns a beep into a short tick. I squared the volume (volume ** 2) because we hear loudness roughly logarithmically, so a slider at half then sounds about half as loud.
+
+Start and stop.
+
+startMetro() creates the audio object on the first tap, because browsers refuse to make sound without a tap. It then calls audio.resume(), because audio starts suspended.
+It then sets nextTime a little in the future, runs the scheduler once, and starts the 25 ms timer.
+stopMetro() clears the timer.
+toggleMetro() picks between them with playing ? stopMetro() : startMetro().
+
+Keep-awake. navigator.wakeLock.request("screen") asks the phone not to dim. It’s async/await because the answer arrives later, and await pauses that function without freezing the page. The try/catch lets browsers without the feature fail quietly. The browser cancels the lock when the page goes into the background, so a visibilitychange listener asks again when you return.
+
+Start-up. The two lines setBpm(metro.bpm); setVolume(metro.volume); push the saved values into the number and the sliders when the page loads.
+
+If you’d like to experiment, three easy changes teach a lot. Change osc.frequency.value for a different pitch, change 0.05 in the ramp for a longer or shorter tick, and change LOOKAHEAD to 0.01 to hear the timing get less reliable.
