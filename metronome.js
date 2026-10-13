@@ -27,7 +27,7 @@ function validSound(name) {
 // inharmonic clang; the filters keep only the top of it, and a short envelope
 // shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
 
-const HAT_GAIN = 1.6;          // loudness of the hi-hats (matched to the other sounds)
+const HAT_GAIN = 1.3;  // match loudness of the hi-hat to the other sounds
 
 const SOUNDS = {
   
