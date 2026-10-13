@@ -190,7 +190,7 @@
 <body>
   <!-- metronome: start/stop and tempo -->
   <div id="metro">
-    <button id="playBtn" aria-label="Start or stop metronome" onclick="toggleMetro()">&#9654;&#xFE0E;</button>
+    <button id="playBtn" aria-label="start or stop metronome" onclick="toggleMetro()">&#9654;&#xFE0E;</button>
     <button aria-label="Slower" onclick="setBpm(metro.bpm - 1)">&minus;</button>
     <input id="bpmOut" type="number" inputmode="numeric" aria-label="Tempo in BPM"
            onfocus="this.select()" onchange="commitBpm(this)"
@@ -210,7 +210,7 @@
     <button class="textbox" id="label" onclick="drawText()"></button>
   </div>
 
-  <!-- photo -->
+  <!-- loaded image -->
   <button class="imgbtn wide" id="photoBtn" onclick="drawPhoto()" aria-label="New photo">
     <img id="photo" alt="">
   </button>
@@ -229,8 +229,8 @@
       <label for="rotateMode">landscape images 90&deg;</label>
     </div>
 
-    <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label>
-    <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)">
+    <!-- <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label> -->
+    <!-- <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)"> -->
 
     <label class="block" for="volSlider">Metronome volume</label>
     <input type="range" id="volSlider" min="0" max="100" step="1" oninput="setVolume(this.value / 100)">
