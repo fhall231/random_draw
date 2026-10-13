@@ -14,7 +14,7 @@ const byId = id => document.getElementById(id);
 // Available inside them: audio (the AudioContext), out (where to send the
 // sound), fade(gain, t, peak, duration) and noise() (a buffer of white noise).
 // ---------------------------------------------------------------
-const SOUND = "openhat";        // try: "beep", "tick", "hihat", "openhat"
+const SOUND = "hihat";        // try: "beep", "tick", "hihat", "openhat"
 
 // metallic hi-hat, 808 style: six square waves at unrelated pitches make an
 // inharmonic clang; the filters keep only the top of it, and a short envelope
