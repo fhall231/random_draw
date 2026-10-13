@@ -14,9 +14,9 @@ const byId = id => document.getElementById(id);
 // Available inside them: audio (the AudioContext), out (where to send the
 // sound), fade(gain, t, peak, duration) and noise() (a buffer of white noise).
 // ---------------------------------------------------------------
-const SOUND = "beep";        // the sound on a first visit (afterwards the saved choice wins)
+const SOUND = "beep";        // defaul sound on a first visit then spec from menu
 
-// what the menu dropdown offers: name from SOUNDS below -> text shown in the menu
+// sounds in menu dropdown: name from SOUNDS: "text shown in the menu"
 const SOUND_CHOICES = { tick: "tick", hihat: "tsss", beep: "beep" };
 
 function validSound(name) {
@@ -27,11 +27,11 @@ function validSound(name) {
 // inharmonic clang; the filters keep only the top of it, and a short envelope
 // shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
 
-const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
+const HAT_GAIN = 1.6;          // loudness of the hi-hats (matched to the other sounds)
 
 const SOUNDS = {
   
-  // plain electronic beep: a 1100 Hz sine that fades in 50 ms
+  // plain electronic beep: sine wave that fades in 50 ms
   beep(t, vol) {
     const o = audio.createOscillator(), g = audio.createGain();
     o.frequency.value = 1100;
@@ -40,21 +40,11 @@ const SOUNDS = {
     o.start(t);  o.stop(t + 0.06);
   },
 
-  // wood block: the pitch drops fast from 1800 to 700 Hz, which gives the "tok"
-  wood(t, vol) {
-    const o = audio.createOscillator(), g = audio.createGain();
-    o.frequency.setValueAtTime(1800, t);
-    o.frequency.exponentialRampToValueAtTime(700, t + 0.03);
-    fade(g, t, vol, 0.08);
-    o.connect(g).connect(out);
-    o.start(t);  o.stop(t + 0.09);
-  },
-
-  // tick: a 30 ms burst of noise, filtered to a band around 3000 Hz (like a hi-hat)
+  // tick: a 30 ms burst of noise, filtered to a band around 1000 Hz
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 1600;  f.Q.value = 1.2;
+    f.type = "bandpass";  f.frequency.value = 1000;  f.Q.value = 1.2;
     fade(g, t, vol * 3.5, 0.03);
     s.connect(f).connect(g).connect(out);
     s.start(t, Math.random() * 0.8, 0.04);   // start somewhere random in the noise, play 40 ms
@@ -63,7 +53,7 @@ const SOUNDS = {
   hihat(t, vol) {
     const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
     bp.type = "bandpass";  bp.frequency.value = 9000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
-    hp.type = "highpass";  hp.frequency.value = 6000;                      // ... and 5000
+    hp.type = "highpass";  hp.frequency.value = 5000;                      // ... and 5000
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.07); // decay = 0.07
@@ -76,11 +66,16 @@ const SOUNDS = {
     bp.connect(hp).connect(g).connect(out);
   },
 
-  // closed hi-hat: the metallic noise above, cut off after 60 ms
-  // hihat(t, vol)    { metalHat(t, vol, 0.06); },
 
-  // open hi-hat: the same sound left to ring for 300 ms
-  // openhat(t, vol)  { metalHat(t, vol, 0.30); },
+  // experimental wood block: the pitch drops fast from 1800 to 700 Hz
+  wood(t, vol) {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.frequency.setValueAtTime(1800, t);
+    o.frequency.exponentialRampToValueAtTime(700, t + 0.03);
+    fade(g, t, vol, 0.08);
+    o.connect(g).connect(out);
+    o.start(t);  o.stop(t + 0.09);
+  },
 
 };
 
