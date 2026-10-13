@@ -10,7 +10,7 @@
 
   <style>
     /* ---------- colours and sizes ----------
-       Fallback values: THEME in items.js overrides the colours at start-up. */
+       Fallback values: THEME in defaults.js overrides the colours at start-up. */
     :root {
       --bg:     #000;
       --panel:  #000;
@@ -61,10 +61,23 @@
     }
     #metro button { position: static; }   /* the shared rule above makes them fixed */
     #bpmOut {
-      min-width: 3ch;
-      font-size: 1.1rem;
+      width: 4ch;
+      padding: 2px 0;
+      font: inherit;
+      font-size: 1.1rem;              /* 16px or more, so phones do not zoom in when editing */
+      text-align: center;
       font-variant-numeric: tabular-nums;
       color: var(--text);
+      background: transparent;
+      border: 0;
+      border-bottom: 1px dotted var(--muted);   /* hints that the number can be edited */
+      border-radius: 0;
+      -moz-appearance: textfield;     /* hide the little up/down arrows */
+      appearance: textfield;
+    }
+    #bpmOut::-webkit-inner-spin-button, #bpmOut::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     /* ---------- main layout: tile + text box on a row, photo below ---------- */
@@ -169,7 +182,9 @@
   <div id="metro">
     <button id="playBtn" aria-label="Start or stop metronome" onclick="toggleMetro()">&#9654;&#xFE0E;</button>
     <button aria-label="Slower" onclick="setBpm(metro.bpm - 1)">&minus;</button>
-    <span id="bpmOut"></span>
+    <input id="bpmOut" type="number" inputmode="numeric" aria-label="Tempo in BPM"
+           onfocus="this.select()" onchange="commitBpm(this)"
+           onkeydown="if (event.key === 'Enter') this.blur()">
     <button aria-label="Faster" onclick="setBpm(metro.bpm + 1)">+</button>
   </div>
 
@@ -222,12 +237,13 @@
     </div>
   </dialog>
 
-  <script src="items.js"></script>   <!-- defines DEFAULTS and THEME -->
+  <script src="defaults.js"></script>    <!-- data: DEFAULTS and THEME -->
+  <script src="metronome.js"></script>   <!-- the metronome: sounds and audio engine -->
   <script>
     // ---------------------------------------------------------------
     // Saved settings (localStorage, wrapped so a failure never breaks the page).
     // Only deck, texts and rotate are saved; tiles and photos always
-    // come from items.js.
+    // come from defaults.js.
     // ---------------------------------------------------------------
     const KEY = "randomdraw.v1";
     let cfg = load();
@@ -473,104 +489,6 @@
     }
 
     // ---------------------------------------------------------------
-    // Metronome (Web Audio). Tempo and volume are saved under their own
-    // key, separate from the draw settings. They apply instantly: the
-    // menu's Save/Cancel buttons do not affect them.
-    // ---------------------------------------------------------------
-    const BPM_MIN = 32, BPM_MAX = 220;
-    const MKEY = "randomdraw.metro";
-    const LOOKAHEAD = 0.1;        // seconds of clicks scheduled in advance
-    const metro = loadMetro();
-    let audio = null;             // AudioContext, created on the first tap
-    let playing = false;
-    let nextTime = 0;             // when the next click sounds (audio clock, seconds)
-    let timer = null;
-    let wakeLock = null;
-
-    function loadMetro() {
-      const m = { bpm: 100, volume: 0.5 };
-      try {
-        const s = JSON.parse(localStorage.getItem(MKEY));
-        if (s && Number.isFinite(s.bpm))    m.bpm = Math.min(BPM_MAX, Math.max(BPM_MIN, Math.round(s.bpm)));
-        if (s && Number.isFinite(s.volume)) m.volume = Math.min(1, Math.max(0, s.volume));
-      } catch (e) {}
-      return m;
-    }
-    function saveMetro() {
-      try { localStorage.setItem(MKEY, JSON.stringify(metro)); } catch (e) {}
-    }
-
-    function setBpm(v) {
-      metro.bpm = Math.min(BPM_MAX, Math.max(BPM_MIN, Math.round(v)));
-      $("bpmOut").textContent   = metro.bpm;
-      $("bpmLabel").textContent = metro.bpm;
-      $("bpmSlider").value      = metro.bpm;
-      saveMetro();
-    }
-    function setVolume(v) {
-      metro.volume = Math.min(1, Math.max(0, v));
-      $("volSlider").value = Math.round(metro.volume * 100);
-      saveMetro();
-    }
-
-    // one short click at an exact time on the audio clock
-    function click(time) {
-      const osc = audio.createOscillator(), g = audio.createGain();
-      const peak = metro.volume ** 2;                    // squared: closer to how loudness is heard
-      osc.frequency.value = 1000;
-      g.gain.setValueAtTime(peak, time);
-      g.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
-      osc.connect(g).connect(audio.destination);
-      osc.start(time);
-      osc.stop(time + 0.06);
-    }
-
-    // runs every 25 ms and schedules every click due in the next 100 ms
-    function scheduler() {
-      while (nextTime < audio.currentTime + LOOKAHEAD) {
-        click(nextTime);
-        nextTime += 60 / metro.bpm;
-      }
-    }
-
-    function startMetro() {
-      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
-      audio.resume();                                    // browsers start audio suspended
-      playing = true;
-      nextTime = audio.currentTime + 0.05;
-      scheduler();
-      timer = setInterval(scheduler, 25);
-      $("playBtn").textContent = "\u25A0";              // stop square
-      keepAwake(true);
-    }
-    function stopMetro() {
-      playing = false;
-      clearInterval(timer);
-      $("playBtn").textContent = "\u25B6\uFE0E";       // play triangle (text style)
-      keepAwake(false);
-    }
-    function toggleMetro() { playing ? stopMetro() : startMetro(); }
-
-    // keep the screen on while the metronome runs
-    async function keepAwake(on) {
-      try {
-        if (on) {
-          if ("wakeLock" in navigator && (!wakeLock || wakeLock.released)) {
-            const lock = await navigator.wakeLock.request("screen");
-            if (playing) wakeLock = lock; else lock.release();   // stopped while waiting
-          }
-        } else if (wakeLock) {
-          await wakeLock.release();
-          wakeLock = null;
-        }
-      } catch (e) {}
-    }
-    // the browser drops the lock when the page is hidden: ask again on return
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && playing) keepAwake(true);
-    });
-
-    // ---------------------------------------------------------------
     // Start-up
     // ---------------------------------------------------------------
     for (const [k, v] of Object.entries(THEME)) {          // THEME key "bg" -> CSS variable --bg
@@ -578,8 +496,7 @@
     }
     document.querySelector('meta[name="theme-color"]').content = THEME.bg;
 
-    setBpm(metro.bpm);
-    setVolume(metro.volume);
+    initMetro();
 
     $("photo").onload = fitPhoto;
     window.addEventListener("resize", fitPhoto);
