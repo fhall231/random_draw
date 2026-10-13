@@ -3,7 +3,7 @@
 
 Usage (from the project folder):   python3 ud_items.py
 
-items.js must contain these two marker lines inside the photos array:
+defaults.js must contain these two marker lines inside the photos array:
     // AUTO-IMG-START
     // AUTO-IMG-END
 Everything between them is replaced; the rest of the file is left untouched.
@@ -37,7 +37,7 @@ def main():
     )
     m = pattern.search(text)
     if not m:
-        sys.exit(f"Markers not found in items.js. Add these two lines inside "
+        sys.exit(f"Markers not found in defaults.js. Add these two lines inside "
                  f"the photos array:\n  {START}\n  {END}")
 
     indent = m.group(1)
