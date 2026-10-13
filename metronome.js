@@ -17,7 +17,7 @@ const byId = id => document.getElementById(id);
 const SOUND = "beep";        // the sound on a first visit (afterwards the saved choice wins)
 
 // what the menu dropdown offers: name from SOUNDS below -> text shown in the menu
-const SOUND_CHOICES = { wood: "Wood block", hihat: "Hi-hat", beep: "Beep" };
+const SOUND_CHOICES = { wood: "Wood block", hihat: "hihat", beep: "Beep" };
 const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
 
 function validSound(name) {
