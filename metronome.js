@@ -211,7 +211,7 @@ function startMetro() {
   ensureAudio();
   makeOut();
   playing = true;
-  nextTime = audio.currentTime + 0.05;
+  nextTime = audio.currentTime + 0.15;  // let the sound card load upon start
   scheduler();
   timer = setInterval(scheduler, 25);
   byId("playBtn").textContent = "\u25A0";              // stop square
