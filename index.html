@@ -161,6 +161,16 @@
       border-radius: 6px;
     }
     dialog input[type=range] { width: 100%; accent-color: var(--accent); }
+    dialog select {
+      width: 100%;
+      padding: 0.5rem;
+      font: inherit;
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
     dialog .check { display: flex; gap: 0.6rem; align-items: center; margin: 0.4rem 0; }
     dialog .check input { width: 1.3rem; height: 1.3rem; }
     .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.2rem; }
@@ -224,6 +234,9 @@
 
     <label class="block" for="volSlider">Metronome volume</label>
     <input type="range" id="volSlider" min="0" max="100" step="1" oninput="setVolume(this.value / 100)">
+
+    <label class="block" for="soundSel">Metronome sound</label>
+    <select id="soundSel" onchange="setSound(this.value); previewSound()"></select>
 
     <label class="block" for="textsBox">keywords (one per line)</label>
     <small>Add <b>| 3</b> to make a word 3&times; as likely, <b>| 0</b> to turn it off.</small>
