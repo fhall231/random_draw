@@ -14,14 +14,34 @@ const byId = id => document.getElementById(id);
 // Available inside them: audio (the AudioContext), out (where to send the
 // sound), fade(gain, t, peak, duration) and noise() (a buffer of white noise).
 // ---------------------------------------------------------------
-const SOUND = "beep";        // try: "beep", "wood", "tick", "cowbell"
+const SOUND = "openhat";        // try: "beep", "tick", "hihat", "openhat"
+
+// metallic hi-hat, 808 style: six square waves at unrelated pitches make an
+// inharmonic clang; the filters keep only the top of it, and a short envelope
+// shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
+function metalHat(t, vol, decay) {
+  const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
+  bp.type = "bandpass";  bp.frequency.value = 10000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
+  hp.type = "highpass";  hp.frequency.value = 7000;                      // ... and 5000
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
+  g.gain.exponentialRampToValueAtTime(0.001, t + decay);
+  for (const ratio of [2, 3, 4.16, 5.43, 6.79, 8.21]) {
+    const o = audio.createOscillator();
+    o.type = "square";  o.frequency.value = 40 * ratio;
+    o.connect(bp);
+    o.start(t);  o.stop(t + decay + 0.01);
+  }
+  bp.connect(hp).connect(g).connect(out);
+}
+const HAT_GAIN = 2;          // loudness of the hi-hats (matched to the other sounds)
 
 const SOUNDS = {
   // plain electronic beep: a 1000 Hz sine that fades in 50 ms
   beep(t, vol) {
     const o = audio.createOscillator(), g = audio.createGain();
-    o.frequency.value = 1200;
-    fade(g, t, vol, 0.05);
+    o.frequency.value = 1157;
+    fade(g, t, vol, 0.04);
     o.connect(g).connect(out);
     o.start(t);  o.stop(t + 0.06);
   },
@@ -43,22 +63,15 @@ const SOUNDS = {
     f.type = "bandpass";  f.frequency.value = 2500;  f.Q.value = 1;
     fade(g, t, vol * 3.5, 0.03);
     s.connect(f).connect(g).connect(out);
-    s.start(t, Math.random() * 0.9, 0.03);   // start somewhere random in the noise, play 40 ms
+    s.start(t, Math.random() * 0.9, 0.04);   // start somewhere random in the noise, play 40 ms
   },
 
-  // cowbell: two square waves (540 and 800 Hz) through a band filter, long fade
-  cowbell(t, vol) {
-    const f = audio.createBiquadFilter(), g = audio.createGain();
-    f.type = "bandpass";  f.frequency.value = 800;  f.Q.value = 1;
-    fade(g, t, vol * 0.3, 0.25);
-    for (const hz of [540, 800]) {
-      const o = audio.createOscillator();
-      o.type = "square";  o.frequency.value = hz;
-      o.connect(f);
-      o.start(t);  o.stop(t + 0.26);
-    }
-    f.connect(g).connect(out);
-  },
+  // closed hi-hat: the metallic noise above, cut off after 60 ms
+  hihat(t, vol)    { metalHat(t, vol, 0.06); },
+
+  // open hi-hat: the same sound left to ring for 300 ms
+  openhat(t, vol)  { metalHat(t, vol, 0.30); },
+
 };
 
 // ---------------------------------------------------------------
@@ -153,7 +166,11 @@ function startMetro() {
   }
   audio.resume();                                    // browsers start audio suspended
   out = audio.createGain();                          // fresh master node for this run
-  out.connect(audio.destination);
+  // safety limiter: very loud clicks are squeezed instead of clipping
+  const limiter = audio.createDynamicsCompressor();
+  limiter.threshold.value = -2;  limiter.knee.value = 0;  limiter.ratio.value = 20;
+  limiter.attack.value = 0.001;  limiter.release.value = 0.05;
+  out.connect(limiter).connect(audio.destination);
   playing = true;
   nextTime = audio.currentTime + 0.05;
   scheduler();
