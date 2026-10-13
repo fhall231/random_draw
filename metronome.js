@@ -14,36 +14,18 @@ const byId = id => document.getElementById(id);
 // Available inside them: audio (the AudioContext), out (where to send the
 // sound), fade(gain, t, peak, duration) and noise() (a buffer of white noise).
 // ---------------------------------------------------------------
-const SOUND = "wood";        // the sound on a first visit (afterwards the saved choice wins)
+const SOUND = "beep";        // the sound on a first visit (afterwards the saved choice wins)
 
 // what the menu dropdown offers: name from SOUNDS below -> text shown in the menu
 const SOUND_CHOICES = { wood: "Wood block", hihat: "Hi-hat", beep: "Beep" };
+const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
 
 function validSound(name) {
   return Object.keys(SOUND_CHOICES).includes(name) && typeof SOUNDS[name] === "function";
 }
 
-// metallic hi-hat, 808 style: six square waves at unrelated pitches make an
-// inharmonic clang; the filters keep only the top of it, and a short envelope
-// shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
-function metalHat(t, vol, decay) {
-  const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
-  bp.type = "bandpass";  bp.frequency.value = 10000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
-  hp.type = "highpass";  hp.frequency.value = 7000;                      // ... and 5000
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
-  g.gain.exponentialRampToValueAtTime(0.001, t + decay);
-  for (const ratio of [2, 3, 4.16, 5.43, 6.79, 8.21]) {
-    const o = audio.createOscillator();
-    o.type = "square";  o.frequency.value = 40 * ratio;
-    o.connect(bp);
-    o.start(t);  o.stop(t + decay + 0.01);
-  }
-  bp.connect(hp).connect(g).connect(out);
-}
-const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
-
 const SOUNDS = {
+  
   // plain electronic beep: a 1000 Hz sine that fades in 50 ms
   beep(t, vol) {
     const o = audio.createOscillator(), g = audio.createGain();
@@ -73,8 +55,26 @@ const SOUNDS = {
     s.start(t, Math.random() * 0.8, 0.03);   // start somewhere random in the noise, play 30 ms
   },
 
-  // closed hi-hat: the metallic noise above, cut off after 60 ms
-  hihat(t, vol)    { metalHat(t, vol, 0.06); },
+
+  // metallic hi-hat, 808 style: six square waves at unrelated pitches make an
+  // inharmonic clang; the filters keep only the top of it, and a short envelope
+  // shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
+  hihat(t, vol){
+    const DECAY = 0.06 // cut off after 60 ms
+    const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
+    bp.type = "bandpass";  bp.frequency.value = 10000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
+    hp.type = "highpass";  hp.frequency.value = 7000;                      // ... and 5000
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
+    g.gain.exponentialRampToValueAtTime(0.001, t + DECAY);
+    for (const ratio of [2, 3, 4.16, 5.43, 6.79, 8.21]) {
+      const o = audio.createOscillator();
+      o.type = "square";  o.frequency.value = 40 * ratio;
+      o.connect(bp);
+      o.start(t);  o.stop(t + DECAY + 0.01);
+    }
+    bp.connect(hp).connect(g).connect(out);
+    },
 
 };
 
