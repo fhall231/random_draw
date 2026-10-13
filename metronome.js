@@ -44,10 +44,11 @@ function metalHat(t, vol, decay) {
 const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
 
 const SOUNDS = {
-  // plain electronic beep: a 1000 Hz sine that fades in 50 ms
+  
+  // plain electronic beep: a 1100 Hz sine that fades in 50 ms
   beep(t, vol) {
     const o = audio.createOscillator(), g = audio.createGain();
-    o.frequency.value = 1000;
+    o.frequency.value = 1100;
     fade(g, t, vol, 0.05);
     o.connect(g).connect(out);
     o.start(t);  o.stop(t + 0.06);
