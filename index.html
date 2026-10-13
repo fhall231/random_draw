@@ -192,7 +192,7 @@
   <div id="metro">
     <button id="playBtn" aria-label="Start or stop metronome" onclick="toggleMetro()">&#9654;&#xFE0E;</button>
     <button aria-label="slower" onclick="setBpm(metro.bpm - 1)">&minus;</button>
-    <input id="bpmOut" type="number" inputmode="numeric" aria-label="tempo in bpm" style="display: none;"
+    <input id="bpmOut" type="number" inputmode="numeric" aria-label="tempo in bpm"
            onfocus="this.select()" onchange="commitBpm(this)"
            onkeydown="if (event.key === 'Enter') this.blur()">
     <button aria-label="faster" onclick="setBpm(metro.bpm + 1)">+</button>
