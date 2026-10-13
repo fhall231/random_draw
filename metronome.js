@@ -44,8 +44,8 @@ const SOUNDS = {
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 1000;  f.Q.value = 0.5;
-    fade(g, t, vol * 3.5, 0.03);
+    f.type = "bandpass";  f.frequency.value = 1000;  f.Q.value = 0.4;
+    fade(g, t, vol * 2.1, 0.03);
     s.connect(f).connect(g).connect(out);
     s.start(t, Math.random() * 0.8, 0.04);   // start somewhere random in the noise, play 40 ms
   },
