@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rewrite the photos list in items.js from the pictures found in img/.
+"""Rewrite the photos list in defaults.js from the pictures found in img/.
 
 Usage (from the project folder):   python3 ud_items.py
 
@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 IMG_DIR = ROOT / "img"
-ITEMS = ROOT / "items.js"
+ITEMS = ROOT / "defaults.js"
 EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
 START, END = "// AUTO-IMG-START", "// AUTO-IMG-END"
 
