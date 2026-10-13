@@ -54,16 +54,16 @@ const SOUNDS = {
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 3000;  f.Q.value = 1;
+    f.type = "bandpass";  f.frequency.value = 2400;  f.Q.value = 1.2;
     fade(g, t, vol * 3.5, 0.03);
     s.connect(f).connect(g).connect(out);
-    s.start(t, Math.random() * 0.9, 0.04);   // start somewhere random in the noise, play 40 ms
+    s.start(t, Math.random() * 0.8, 0.04);   // start somewhere random in the noise, play 40 ms
   },
 
   hihat(t, vol) {
     const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
-    bp.type = "bandpass";  bp.frequency.value = 10000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
-    hp.type = "highpass";  hp.frequency.value = 7000;                      // ... and 5000
+    bp.type = "bandpass";  bp.frequency.value = 9000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
+    hp.type = "highpass";  hp.frequency.value = 6000;                      // ... and 5000
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.07); // decay = 0.07
