@@ -88,7 +88,7 @@ const SOUNDS = {
       o.start(t);  o.stop(t + 0.07 + 0.01); // decay = 0.07
     }
     bp.connect(hp).connect(g).connect(out);
-  }
+  },
 
   // closed hi-hat: the metallic noise above, cut off after 60 ms
   // hihat(t, vol)    { metalHat(t, vol, 0.06); },
