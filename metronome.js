@@ -26,21 +26,7 @@ function validSound(name) {
 // metallic hi-hat, 808 style: six square waves at unrelated pitches make an
 // inharmonic clang; the filters keep only the top of it, and a short envelope
 // shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
-function metalHat(t, vol, decay) {
-  const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
-  bp.type = "bandpass";  bp.frequency.value = 10000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
-  hp.type = "highpass";  hp.frequency.value = 7000;                      // ... and 5000
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
-  g.gain.exponentialRampToValueAtTime(0.001, t + decay);
-  for (const ratio of [2, 3, 4.16, 5.43, 6.79, 8.21]) {
-    const o = audio.createOscillator();
-    o.type = "square";  o.frequency.value = 40 * ratio;
-    o.connect(bp);
-    o.start(t);  o.stop(t + decay + 0.01);
-  }
-  bp.connect(hp).connect(g).connect(out);
-}
+
 const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
 
 const SOUNDS = {
