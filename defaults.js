@@ -30,7 +30,7 @@ const DEFAULTS = {
 		  "whole-tone | 0.8"
 		 ],
 
-  tiles: [    // letter | background | letter colour | weight (optional)
+  tiles: [    // letter | background | letter colour | weight (optional, blank=1)
 		"C♭ | #333 | #eee | 0.2",
 		"G♭ | #0ef | #000 | 0.5",
 		"D♭ | #fa6 | #000 | 0.5",
@@ -48,7 +48,6 @@ const DEFAULTS = {
 		"C^♯| #000 | #eee | 0.5",
     ],
 
-    //photos: ["img/eg1.png", "img/snail.png","img/ms.svg","img/equation.svg"],
 	photos: [
       // AUTO-IMG-START
       "img/ms.svg",
