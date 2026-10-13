@@ -14,7 +14,7 @@ const byId = id => document.getElementById(id);
 // Available inside them: audio (the AudioContext), out (where to send the
 // sound), fade(gain, t, peak, duration) and noise() (a buffer of white noise).
 // ---------------------------------------------------------------
-const SOUND = "cowbell";        // try: "beep", "wood", "tick", "cowbell"
+const SOUND = "beep";        // try: "beep", "wood", "tick", "cowbell"
 
 const SOUNDS = {
   // plain electronic beep: a 1000 Hz sine that fades in 50 ms
