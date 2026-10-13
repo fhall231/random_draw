@@ -221,16 +221,16 @@
 
     <div class="check">
       <input type="checkbox" id="deckMode">
-      <label for="deckMode">No-repeat mode <small>(go through every item once before reshuffling)</small></label>
+      <label for="deckMode">no-repeat shuffle </label>
     </div>
 
     <div class="check">
       <input type="checkbox" id="rotateMode">
-      <label for="rotateMode">Rotate images 90&deg;</label>
+      <label for="rotateMode">landscape images 90&deg;</label>
     </div>
 
-    <!-- <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label> -->
-    <!-- <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)"> -->
+    <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label>
+    <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)">
 
     <label class="block" for="volSlider">Metronome volume</label>
     <input type="range" id="volSlider" min="0" max="100" step="1" oninput="setVolume(this.value / 100)">
