@@ -16,10 +16,10 @@
       --panel:  #000;
       --border: #000;
       --text:   #ddd;
-      --word:   #eee;   /* colour of the word in the text box */
-      --muted:  #9ab;   /* small hint text in the menu */
-      --accent: #199;   /* Save button */
-      --w:      520px;  /* width of the whole layout */
+      --word:   #eee;      /* colour of the word in the text box */
+      --muted:  #94a3b8;   /* small hint text in the menu */
+      --accent: #0d9488;   /* Save button */
+      --w:      520px;     /* width of the whole layout */
     }
 
     body {
@@ -100,11 +100,11 @@
     .row .imgbtn { flex: none; margin: 0; }
     .imgbtn.wide { width: min(var(--w), 100%); margin: 0 auto; position: relative; }
 
-    #tile  { width: 60px; height: 60px; border-radius: 0px; }
+    #tile  { width: 70px; height: 70px; border-radius: 7px; }
     #photo {
       width: 100%;
       height: auto;
-      max-height: 85vh;      /* never taller than N% of the screen */
+      max-height: 80vh;      /* never taller than 80% of the screen */
       object-fit: contain;
     }
 
@@ -143,7 +143,7 @@
       color: var(--text);
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 9px;
+      border-radius: 12px;
     }
     dialog::backdrop { background: rgba(9, 9, 9, 0.65); }
     dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
@@ -180,7 +180,7 @@
       color: var(--text);
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-radius: 8px;
     }
     .actions button.primary { background: var(--accent); border-color: var(--accent); }
     .actions .spacer { flex: 1; }
@@ -188,14 +188,14 @@
 </head>
 
 <body>
-  <!-- metronome: start/stop and tempo on top bar -->
+  <!-- metronome: start/stop and tempo -->
   <div id="metro">
     <button id="playBtn" aria-label="Start or stop metronome" onclick="toggleMetro()">&#9654;&#xFE0E;</button>
-    <button aria-label="slower" onclick="setBpm(metro.bpm - 1)">&minus;</button>
-    <input id="bpmOut" type="number" inputmode="numeric" aria-label="tempo in bpm"
+    <button aria-label="Slower" onclick="setBpm(metro.bpm - 1)">&minus;</button>
+    <input id="bpmOut" type="number" inputmode="numeric" aria-label="Tempo in BPM"
            onfocus="this.select()" onchange="commitBpm(this)"
            onkeydown="if (event.key === 'Enter') this.blur()">
-    <button aria-label="faster" onclick="setBpm(metro.bpm + 1)">+</button>
+    <button aria-label="Faster" onclick="setBpm(metro.bpm + 1)">+</button>
   </div>
 
   <!-- menu and history buttons -->
@@ -221,25 +221,25 @@
 
     <div class="check">
       <input type="checkbox" id="deckMode">
-      <label for="deckMode">no-repeat shuffle </label>
+      <label for="deckMode">No-repeat mode <small>(go through every item once before reshuffling)</small></label>
     </div>
 
     <div class="check">
       <input type="checkbox" id="rotateMode">
-      <label for="rotateMode">landscape images </label>
+      <label for="rotateMode">Rotate images 90&deg;</label>
     </div>
 
     <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label>
     <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)">
 
-    <label class="block" for="volSlider">metronome volume</label>
+    <label class="block" for="volSlider">Metronome volume</label>
     <input type="range" id="volSlider" min="0" max="100" step="1" oninput="setVolume(this.value / 100)">
 
-    <label class="block" for="soundSel">metronome sound</label>
+    <label class="block" for="soundSel">Metronome sound</label>
     <select id="soundSel" onchange="setSound(this.value); previewSound()"></select>
 
     <label class="block" for="textsBox">keywords (one per line)</label>
-    <!-- <small>Add <b>| 3</b> to make a word 3&times; as likely, <b>| 0</b> to turn it off.</small> -->
+    <small>Add <b>| 3</b> to make a word 3&times; as likely, <b>| 0</b> to turn it off.</small>
     <textarea id="textsBox" spellcheck="false"></textarea>
 
     <div class="actions">
