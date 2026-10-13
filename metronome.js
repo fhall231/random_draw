@@ -17,7 +17,7 @@ const byId = id => document.getElementById(id);
 const SOUND = "beep";        // the sound on a first visit (afterwards the saved choice wins)
 
 // what the menu dropdown offers: name from SOUNDS below -> text shown in the menu
-const SOUND_CHOICES = { tick: "tick", hihat: "Hi-hat", beep: "Beep" };
+const SOUND_CHOICES = { tick: "tick", hihat: "tsss", beep: "beep" };
 
 function validSound(name) {
   return Object.keys(SOUND_CHOICES).includes(name) && typeof SOUNDS[name] === "function";
@@ -54,7 +54,7 @@ const SOUNDS = {
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 2400;  f.Q.value = 1.2;
+    f.type = "bandpass";  f.frequency.value = 1600;  f.Q.value = 1.2;
     fade(g, t, vol * 3.5, 0.03);
     s.connect(f).connect(g).connect(out);
     s.start(t, Math.random() * 0.8, 0.04);   // start somewhere random in the noise, play 40 ms
