@@ -100,11 +100,11 @@
     .row .imgbtn { flex: none; margin: 0; }
     .imgbtn.wide { width: min(var(--w), 100%); margin: 0 auto; position: relative; }
 
-    #tile  { width: 70px; height: 70px; border-radius: 7px; }
+    #tile  { width: 60px; height: 60px; border-radius: 0px; }
     #photo {
       width: 100%;
       height: auto;
-      max-height: 80vh;      /* never taller than 80% of the screen */
+      max-height: 85vh;      /* never taller than N% of the screen */
       object-fit: contain;
     }
 
@@ -143,7 +143,7 @@
       color: var(--text);
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 9px;
     }
     dialog::backdrop { background: rgba(9, 9, 9, 0.65); }
     dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
@@ -180,7 +180,7 @@
       color: var(--text);
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 7px;
     }
     .actions button.primary { background: var(--accent); border-color: var(--accent); }
     .actions .spacer { flex: 1; }
