@@ -61,7 +61,7 @@
     }
     #metro button { position: static; }   /* the shared rule above makes them fixed */
     #bpmOut {
-      width: 4ch;
+      width: 5ch;
       padding: 2px 0;
       font: inherit;
       font-size: 1.1rem;              /* 16px or more, so phones do not zoom in when editing */
@@ -70,7 +70,7 @@
       color: var(--text);
       background: transparent;
       border: 0;
-      border-bottom: 1px dotted var(--muted);   /* hints that the number can be edited */
+      border-bottom: 0px dotted var(--muted);   /* hints that the number can be edited */
       border-radius: 0;
       -moz-appearance: textfield;     /* hide the little up/down arrows */
       appearance: textfield;
@@ -226,7 +226,7 @@
 
     <div class="check">
       <input type="checkbox" id="rotateMode">
-      <label for="rotateMode">landscape images 90&deg;</label>
+      <label for="rotateMode">landscape images </label>
     </div>
 
     <!-- <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label> -->
