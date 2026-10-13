@@ -79,19 +79,6 @@ const SOUNDS = {
   // open hi-hat: the same sound left to ring for 300 ms
   openhat(t, vol)  { metalHat(t, vol, 0.30); },
 
-  // cowbell: two square waves (540 and 800 Hz) through a band filter, long fade
-  cowbell(t, vol) {
-    const f = audio.createBiquadFilter(), g = audio.createGain();
-    f.type = "bandpass";  f.frequency.value = 800;  f.Q.value = 1;
-    fade(g, t, vol * 0.3, 0.25);
-    for (const hz of [540, 800]) {
-      const o = audio.createOscillator();
-      o.type = "square";  o.frequency.value = hz;
-      o.connect(f);
-      o.start(t);  o.stop(t + 0.26);
-    }
-    f.connect(g).connect(out);
-  },
 };
 
 // ---------------------------------------------------------------
