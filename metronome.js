@@ -41,7 +41,7 @@ function metalHat(t, vol, decay) {
   }
   bp.connect(hp).connect(g).connect(out);
 }
-const HAT_GAIN = 2;          // loudness of the hi-hats (matched to the other sounds)
+const HAT_GAIN = 1.7;          // loudness of the hi-hats (matched to the other sounds)
 
 const SOUNDS = {
   // plain electronic beep: a 1000 Hz sine that fades in 50 ms
