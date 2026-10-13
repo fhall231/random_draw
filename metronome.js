@@ -55,7 +55,7 @@ const SOUNDS = {
     bp.type = "bandpass";  bp.frequency.value = 9000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
     hp.type = "highpass";  hp.frequency.value = 5000;                      // ... and 5000
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
+    g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.004);   // 4 ms attack
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.07); // decay = 0.07
     for (const ratio of [2, 3, 4.16, 5.43, 6.79, 8.21]) {
       const o = audio.createOscillator();
