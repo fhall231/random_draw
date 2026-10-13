@@ -74,11 +74,27 @@ const SOUNDS = {
     s.start(t, Math.random() * 0.9, 0.04);   // start somewhere random in the noise, play 40 ms
   },
 
+  hihat(t, vol) {
+    const bp = audio.createBiquadFilter(), hp = audio.createBiquadFilter(), g = audio.createGain();
+    bp.type = "bandpass";  bp.frequency.value = 10000;  bp.Q.value = 0.5;   // on a small phone speaker try 8000
+    hp.type = "highpass";  hp.frequency.value = 7000;                      // ... and 5000
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol * HAT_GAIN, t + 0.003);   // 3 ms attack
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.07); // decay = 0.07
+    for (const ratio of [2, 3, 4.16, 5.43, 6.79, 8.21]) {
+      const o = audio.createOscillator();
+      o.type = "square";  o.frequency.value = 40 * ratio;
+      o.connect(bp);
+      o.start(t);  o.stop(t + 0.07 + 0.01); // decay = 0.07
+    }
+    bp.connect(hp).connect(g).connect(out);
+  }
+
   // closed hi-hat: the metallic noise above, cut off after 60 ms
-  hihat(t, vol)    { metalHat(t, vol, 0.06); },
+  // hihat(t, vol)    { metalHat(t, vol, 0.06); },
 
   // open hi-hat: the same sound left to ring for 300 ms
-  openhat(t, vol)  { metalHat(t, vol, 0.30); },
+  // openhat(t, vol)  { metalHat(t, vol, 0.30); },
 
 };
 
