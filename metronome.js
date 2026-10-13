@@ -44,12 +44,12 @@ const SOUNDS = {
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 1300;  f.Q.value = 0.4;
+    f.type = "bandpass";  f.frequency.value = 1000;  f.Q.value = 0.4;
     const lp = audio.createBiquadFilter();
-    lp.type = "lowpass";  lp.frequency.value = 3000;  lp.Q.value = 0.8;   // cutoff
-    fade(g, t, vol * 2.7, 0.03);
+    lp.type = "lowpass";  lp.frequency.value = 2400;  lp.Q.value = 0.8;   // cutoff
+    fade(g, t, vol * 2.5, 0.03);
     s.connect(f).connect(lp).connect(g).connect(out);
-    s.start(t, Math.random() * 0.8, 0.04);   // start somewhere random in the noise, play 40 ms
+    s.start(t, Math.random() * 0.7, 0.04);   // start somewhere random in the noise, play 40 ms
   },
 
   hihat(t, vol) {
@@ -86,7 +86,7 @@ const SOUNDS = {
 // key, separate from the draw settings. They apply instantly: the
 // menu's Save/Cancel buttons do not affect them.
 // ---------------------------------------------------------------
-const BPM_MIN = 32, BPM_MAX = 220;
+const BPM_MIN = 32, BPM_MAX = 208;
 const MKEY = "randomdraw.metro";
 const LOOKAHEAD = 0.25;       // seconds of clicks scheduled in advance (more = steadier on slow phones)
 const metro = loadMetro();
