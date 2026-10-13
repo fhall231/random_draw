@@ -20,7 +20,7 @@ const SOUNDS = {
   // plain electronic beep: a 1000 Hz sine that fades in 50 ms
   beep(t, vol) {
     const o = audio.createOscillator(), g = audio.createGain();
-    o.frequency.value = 1000;
+    o.frequency.value = 1200;
     fade(g, t, vol, 0.05);
     o.connect(g).connect(out);
     o.start(t);  o.stop(t + 0.06);
@@ -40,10 +40,10 @@ const SOUNDS = {
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 3000;  f.Q.value = 1;
+    f.type = "bandpass";  f.frequency.value = 2500;  f.Q.value = 1;
     fade(g, t, vol * 3.5, 0.03);
     s.connect(f).connect(g).connect(out);
-    s.start(t, Math.random() * 0.9, 0.04);   // start somewhere random in the noise, play 40 ms
+    s.start(t, Math.random() * 0.9, 0.03);   // start somewhere random in the noise, play 40 ms
   },
 
   // cowbell: two square waves (540 and 800 Hz) through a band filter, long fade
