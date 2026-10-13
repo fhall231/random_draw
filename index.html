@@ -221,21 +221,21 @@
 
     <div class="check">
       <input type="checkbox" id="deckMode">
-      <label for="deckMode">No-repeat shuffle </label>
+      <label for="deckMode">no-repeat shuffle </label>
     </div>
 
     <div class="check">
       <input type="checkbox" id="rotateMode">
-      <label for="rotateMode">Rotate images 90&deg;</label>
+      <label for="rotateMode">landscape images </label>
     </div>
 
-    <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label>
-    <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)">
+    <!-- <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label> -->
+    <!-- <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)"> -->
 
-    <label class="block" for="volSlider">Metronome volume</label>
+    <label class="block" for="volSlider">metronome volume</label>
     <input type="range" id="volSlider" min="0" max="100" step="1" oninput="setVolume(this.value / 100)">
 
-    <label class="block" for="soundSel">Metronome sound</label>
+    <label class="block" for="soundSel">metronome sound</label>
     <select id="soundSel" onchange="setSound(this.value); previewSound()"></select>
 
     <label class="block" for="textsBox">keywords (one per line)</label>
