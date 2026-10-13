@@ -44,10 +44,10 @@ const SOUNDS = {
   tick(t, vol) {
     const s = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain();
     s.buffer = noise();
-    f.type = "bandpass";  f.frequency.value = 1300;  f.Q.value = 0.3;
+    f.type = "bandpass";  f.frequency.value = 1300;  f.Q.value = 0.4;
     const lp = audio.createBiquadFilter();
-    lp.type = "lowpass";  lp.frequency.value = 3200;  lp.Q.value = 0.7;   // cutoff: try 1.5×–3× FREQ
-    fade(g, t, vol * 2.1, 0.03);
+    lp.type = "lowpass";  lp.frequency.value = 3000;  lp.Q.value = 0.7;   // cutoff: try 1.5×–3× FREQ
+    fade(g, t, vol * 2.4, 0.03);
     s.connect(f).connect(lp).connect(g).connect(out);
     s.start(t, Math.random() * 0.8, 0.04);   // start somewhere random in the noise, play 40 ms
   },
