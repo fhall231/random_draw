@@ -14,7 +14,7 @@ const byId = id => document.getElementById(id);
 // Available inside them: audio (the AudioContext), out (where to send the
 // sound), fade(gain, t, peak, duration) and noise() (a buffer of white noise).
 // ---------------------------------------------------------------
-const SOUND = "wood";        // the sound on a first visit (afterwards the saved choice wins)
+const SOUND = "beep";        // the sound on a first visit (afterwards the saved choice wins)
 
 // what the menu dropdown offers: name from SOUNDS below -> text shown in the menu
 const SOUND_CHOICES = { tick: "tick", hihat: "Hi-hat", beep: "Beep" };
