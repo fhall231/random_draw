@@ -17,7 +17,7 @@ const byId = id => document.getElementById(id);
 const SOUND = "wood";        // the sound on a first visit (afterwards the saved choice wins)
 
 // what the menu dropdown offers: name from SOUNDS below -> text shown in the menu
-const SOUND_CHOICES = { wood: "Wood block", hihat: "Hi-hat", beep: "Beep" };
+const SOUND_CHOICES = { tick: "tick", hihat: "Hi-hat", beep: "Beep" };
 
 function validSound(name) {
   return Object.keys(SOUND_CHOICES).includes(name) && typeof SOUNDS[name] === "function";
