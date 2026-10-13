@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Random Draw</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="ico/icon-192.png">
+  <meta name="theme-color" content="#000000">   <!-- kept in sync with THEME.bg by the script -->
+
+  <style>
+    /* ---------- colours and sizes ----------
+       Fallback values: THEME in items.js overrides the colours at start-up. */
+    :root {
+      --bg:     #000;
+      --panel:  #000;
+      --border: #000;
+      --text:   #ddd;
+      --word:   #eee;      /* colour of the word in the text box */
+      --muted:  #94a3b8;   /* small hint text in the menu */
+      --accent: #0d9488;   /* Save button */
+      --w:      520px;     /* width of the whole layout */
+    }
+
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 3.5rem 1rem 3rem;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+    /* ---------- menu and back buttons (top right) ---------- */
+    #menuBtn, #backBtn, #metro button {
+      position: fixed;
+      top: 0.5rem;
+      width: 37px;
+      height: 35px;
+      font-size: 1.4rem;
+      line-height: 1;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
+    #menuBtn { right: 0.5rem; }
+    #backBtn { right: calc(0.5rem + 37px + 6px); }   /* just left of the menu button */
+    #backBtn:disabled { opacity: 0.35; cursor: default; }
+
+    /* ---------- metronome controls (top left) ---------- */
+    #metro {
+      position: fixed;
+      top: 0.5rem;
+      left: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #metro button { position: static; }   /* the shared rule above makes them fixed */
+    #bpmOut {
+      min-width: 3ch;
+      font-size: 1.1rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+
+    /* ---------- main layout: tile + text box on a row, photo below ---------- */
+    .row {
+      display: flex;
+      gap: 1rem;
+      align-items: stretch;
+      width: min(var(--w), 100%);
+      margin: 0 auto 1.5rem;
+    }
+
+    .imgbtn {
+      display: block;
+      padding: 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      line-height: 0;
+    }
+    .row .imgbtn { flex: none; margin: 0; }
+    .imgbtn.wide { width: min(var(--w), 100%); margin: 0 auto; position: relative; }
+
+    #tile  { width: 70px; height: 70px; border-radius: 7px; }
+    #photo {
+      width: 100%;
+      height: auto;
+      max-height: 80vh;      /* never taller than 80% of the screen */
+      object-fit: contain;
+    }
+
+    /* rotated photo: sized and centred by fitPhoto() in the script */
+    #photo.rot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      max-width: none;
+      max-height: none;
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    .textbox {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      padding: 0 0.8rem;
+      font-family: "CMU Serif", Georgia, serif;
+      font-size: 1.5rem;
+      line-height: 1.2;
+      color: var(--word);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 0;
+    }
+    sup, sub { line-height: 0; }
+
+    /* ---------- menu dialog ---------- */
+    dialog {
+      width: min(520px, 92vw);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 1rem 1.2rem 1.2rem;
+      text-align: left;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    dialog::backdrop { background: rgba(9, 9, 9, 0.65); }
+    dialog h2 { margin: 0 0 0.8rem; font-size: 1.2rem; }
+    dialog label.block { display: block; margin: 1rem 0 0.3rem; font-weight: bold; }
+    dialog small { display: block; margin-bottom: 0.4rem; color: var(--muted); }
+    dialog textarea {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 7rem;
+      padding: 0.5rem;
+      font: 0.95rem/1.4 monospace;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    dialog input[type=range] { width: 100%; accent-color: var(--accent); }
+    dialog .check { display: flex; gap: 0.6rem; align-items: center; margin: 0.4rem 0; }
+    dialog .check input { width: 1.3rem; height: 1.3rem; }
+    .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .actions button {
+      padding: 0.6rem 1.1rem;
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .actions button.primary { background: var(--accent); border-color: var(--accent); }
+    .actions .spacer { flex: 1; }
+  </style>
+</head>
+
+<body>
+  <!-- metronome: start/stop and tempo -->
+  <div id="metro">
+    <button id="playBtn" aria-label="Start or stop metronome" onclick="toggleMetro()">&#9654;&#xFE0E;</button>
+    <button aria-label="Slower" onclick="setBpm(metro.bpm - 1)">&minus;</button>
+    <span id="bpmOut"></span>
+    <button aria-label="Faster" onclick="setBpm(metro.bpm + 1)">+</button>
+  </div>
+
+  <!-- menu and history buttons -->
+  <button id="menuBtn" aria-label="Menu" onclick="openMenu()">&#9776;</button>
+  <button id="backBtn" aria-label="Previous photo" onclick="backPhoto()" disabled>&#8617;</button>
+
+  <!-- tile and text box side by side -->
+  <div class="row">
+    <button class="imgbtn" onclick="drawTile()" aria-label="New tile">
+      <img id="tile" alt="">
+    </button>
+    <button class="textbox" id="label" onclick="drawText()"></button>
+  </div>
+
+  <!-- photo -->
+  <button class="imgbtn wide" id="photoBtn" onclick="drawPhoto()" aria-label="New photo">
+    <img id="photo" alt="">
+  </button>
+
+  <!-- settings menu -->
+  <dialog id="menu">
+    <h2>Settings</h2>
+
+    <div class="check">
+      <input type="checkbox" id="deckMode">
+      <label for="deckMode">No-repeat mode <small>(go through every item once before reshuffling)</small></label>
+    </div>
+
+    <div class="check">
+      <input type="checkbox" id="rotateMode">
+      <label for="rotateMode">Rotate images 90&deg;</label>
+    </div>
+
+    <label class="block" for="bpmSlider">Metronome tempo: <span id="bpmLabel"></span> BPM</label>
+    <input type="range" id="bpmSlider" min="32" max="220" step="1" oninput="setBpm(+this.value)">
+
+    <label class="block" for="volSlider">Metronome volume</label>
+    <input type="range" id="volSlider" min="0" max="100" step="1" oninput="setVolume(this.value / 100)">
+
+    <label class="block" for="textsBox">keywords (one per line)</label>
+    <small>Add <b>| 3</b> to make a word 3&times; as likely, <b>| 0</b> to turn it off.</small>
+    <textarea id="textsBox" spellcheck="false"></textarea>
+
+    <div class="actions">
+      <button class="primary" onclick="saveMenu()">Save</button>
+      <button onclick="closeMenu()">Cancel</button>
+      <span class="spacer"></span>
+      <button onclick="fillMenu(DEFAULTS)">Defaults</button>
+    </div>
+  </dialog>
+
+  <script src="items.js"></script>   <!-- defines DEFAULTS and THEME -->
+  <script>
+    // ---------------------------------------------------------------
+    // Saved settings (localStorage, wrapped so a failure never breaks the page).
+    // Only deck, texts and rotate are saved; tiles and photos always
+    // come from items.js.
+    // ---------------------------------------------------------------
+    const KEY = "randomdraw.v1";
+    let cfg = load();
+
+    function load() {
+      const out = JSON.parse(JSON.stringify(DEFAULTS));
+      out.rotate = out.rotate === true;
+      try {
+        const saved = JSON.parse(localStorage.getItem(KEY));
+        if (saved) {
+          if (typeof saved.deck === "boolean")   out.deck = saved.deck;
+          if (typeof saved.rotate === "boolean") out.rotate = saved.rotate;
+          if (Array.isArray(saved.texts))        out.texts = saved.texts.map(String);
+        }
+      } catch (e) {}
+      return out;
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(KEY, JSON.stringify({ deck: cfg.deck, texts: cfg.texts, rotate: cfg.rotate }));
+      } catch (e) {}
+    }
+
+    // ---------------------------------------------------------------
+    // Picking.
+    //   Random mode:  weighted random; the same item is not repeated
+    //                 immediately unless weights are in use.
+    //   Deck mode:    every item once per cycle (a weight = number of
+    //                 copies in the deck), then reshuffle.
+    // ---------------------------------------------------------------
+    const state = {};   // per list: { last: previous index, deck: remaining indices }
+    function resetState() {
+      for (const k of ["text", "tile", "photo"]) state[k] = { last: -1, deck: [] };
+    }
+    resetState();
+
+    // counts[i] = how many copies of item i go in the deck
+    function shuffledDeck(counts, avoid) {
+      const a = [];
+      counts.forEach((c, i) => { for (let k = 0; k < c; k++) a.push(i); });
+      if (a.length === 0) counts.forEach((_, i) => a.push(i));
+      for (let i = a.length - 1; i > 0; i--) {              // Fisher-Yates
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      // draws come from the END, so keep the previous pick from being drawn first
+      if (a.length > 1 && a[a.length - 1] === avoid) {
+        const j = a.findIndex(x => x !== avoid);
+        if (j >= 0) [a[a.length - 1], a[j]] = [a[j], a[a.length - 1]];
+      }
+      return a;
+    }
+
+    // random index with probability proportional to w[i]; never returns `avoid`
+    // (unless it is the only choice)
+    function weightedPick(w, avoid) {
+      let total = 0, lastOk = -1;
+      for (let i = 0; i < w.length; i++) {
+        if (i !== avoid) { total += w[i]; if (w[i] > 0) lastOk = i; }
+      }
+      if (total <= 0) return avoid >= 0 ? avoid : 0;
+      let r = Math.random() * total;
+      for (let i = 0; i < w.length; i++) {
+        if (i === avoid) continue;
+        r -= w[i];
+        if (r < 0) return i;
+      }
+      return lastOk;
+    }
+
+    // next index for a list of n items; weights is optional (default: all 1)
+    function nextIndex(key, n, weights) {
+      if (n === 0) return -1;
+      let w = weights || Array(n).fill(1);
+      if (!w.some(x => x > 0)) w = w.map(() => 1);          // all zero: treat as equal
+      const s = state[key];
+      if (n === 1) { s.last = 0; return 0; }
+      if (cfg.deck) {
+        if (s.deck.length === 0) s.deck = shuffledDeck(w.map(Math.round), s.last);
+        s.last = s.deck.pop();
+      } else {
+        const uniform = w.every(x => x === w[0]);           // weights in use: repeats allowed
+        s.last = weightedPick(w, uniform ? s.last : -1);
+      }
+      return s.last;
+    }
+
+    // ---------------------------------------------------------------
+    // Text formatting: ^ superscript, _ subscript (works for any character)
+    // ---------------------------------------------------------------
+    const SUP = /\^([^\s{}^_]|\{[^}]+\})/gu;
+    const SUB = /_([^\s{}^_]|\{[^}]+\})/gu;
+    const esc   = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const strip = s => s.replace(/[{}]/g, "");
+
+    function toHTML(raw) {
+      return esc(raw)
+        .replace(SUP, (m, s) => `<sup>${strip(s)}</sup>`)
+        .replace(SUB, (m, s) => `<sub>${strip(s)}</sub>`);
+    }
+
+    // "word | 3"  ->  { text: "word", w: 3 }   (no number = weight 1)
+    function parseWord(line) {
+      const m = line.match(/^(.+?)\s*\|\s*(\d+(?:\.\d+)?)\s*$/);
+      return m ? { text: m[1], w: parseFloat(m[2]) } : { text: line, w: 1 };
+    }
+
+    // ---------------------------------------------------------------
+    // Tiles: coloured squares with a letter, drawn as SVG
+    // ---------------------------------------------------------------
+    const TILE_FONT = 110;   // same font size for every tile
+
+    function tileSVG(letter, bg, fg) {
+      const size  = TILE_FONT;
+      const up    = Math.round(size * 0.3);    // shift for super/subscripts
+      const small = Math.round(size * 0.7);    // their font size
+      const y     = Math.round(100 + size * 0.45);
+      // the zero-width space (​) tspan moves the baseline back after a super/subscript
+      const label = esc(letter)
+        .replace(SUP, (m, s) => `<tspan dy="-${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="${up}">​</tspan>`)
+        .replace(SUB, (m, s) => `<tspan dy="${up}" font-size="${small}">${strip(s)}</tspan><tspan dy="-${up}">​</tspan>`);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">` +
+        `<rect width="220" height="220" fill="${esc(bg)}"/>` +
+        `<text x="110" y="${y}" font-size="${size}" text-anchor="middle" fill="${esc(fg)}">${label}</text>` +
+        `</svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    // "letter | background | letter colour | weight"  (everything after the letter is optional)
+    function parseTile(line) {
+      const p = line.split("|").map(s => s.trim());
+      const w = parseFloat(p[3]);
+      return {
+        letter: p[0] || "?",
+        bg: p[1] || "#475569",
+        fg: p[2] || "white",
+        w: Number.isFinite(w) && w >= 0 ? w : 1,   // missing or invalid = 1
+      };
+    }
+
+    // ---------------------------------------------------------------
+    // Drawing
+    // ---------------------------------------------------------------
+    const $ = id => document.getElementById(id);
+
+    function drawText() {
+      const items = cfg.texts.map(parseWord);
+      const i = nextIndex("text", items.length, items.map(x => x.w));
+      $("label").innerHTML = i < 0 ? "&mdash;" : toHTML(items[i].text);
+    }
+
+    function drawTile() {
+      const tiles = cfg.tiles.map(parseTile);
+      const i = nextIndex("tile", tiles.length, tiles.map(t => t.w));
+      if (i < 0) { $("tile").removeAttribute("src"); return; }
+      const t = tiles[i];
+      $("tile").src = tileSVG(t.letter, t.bg, t.fg);
+    }
+
+    // ---------------------------------------------------------------
+    // Photos: drawing, history (back button) and rotation
+    // ---------------------------------------------------------------
+    const photoHistory = [];     // photos shown before the current one
+    let currentPhoto = null;
+    const HISTORY_MAX = 30;
+
+    function drawPhoto() {
+      const i = nextIndex("photo", cfg.photos.length);
+      if (i < 0) { $("photo").removeAttribute("src"); return; }
+      if (currentPhoto) {
+        photoHistory.push(currentPhoto);
+        if (photoHistory.length > HISTORY_MAX) photoHistory.shift();
+      }
+      currentPhoto = cfg.photos[i];
+      $("photo").src = currentPhoto;
+      updateBack();
+    }
+
+    function backPhoto() {
+      if (!photoHistory.length) return;
+      currentPhoto = photoHistory.pop();
+      $("photo").src = currentPhoto;
+      updateBack();
+    }
+
+    function updateBack() { $("backBtn").disabled = photoHistory.length === 0; }
+
+    // Rotated layout: the image is turned 90 degrees, so the button around it
+    // gets swapped width and height. Without rotation, all inline sizes are cleared.
+    function fitPhoto() {
+      const img = $("photo"), box = $("photoBtn");
+      const on = cfg.rotate && img.naturalWidth > 0;
+      img.classList.toggle("rot", on);
+      if (!on) {
+        img.style.width = img.style.height = box.style.width = box.style.height = "";
+        return;
+      }
+      const W = document.querySelector(".row").clientWidth;
+      const maxH = window.innerHeight * 0.7;
+      const nw = img.naturalWidth, nh = img.naturalHeight;
+      const s = Math.min(W / nh, maxH / nw);
+      img.style.width  = nw * s + "px";  img.style.height = nh * s + "px";
+      box.style.width  = nh * s + "px";  box.style.height = nw * s + "px";
+    }
+
+    function drawAll() { drawText(); drawTile(); drawPhoto(); }
+
+    // ---------------------------------------------------------------
+    // Menu
+    // ---------------------------------------------------------------
+    const lines = s => s.split("\n").map(x => x.trim()).filter(Boolean);
+
+    function fillMenu(src) {
+      $("deckMode").checked   = src.deck;
+      $("textsBox").value     = src.texts.join("\n");
+      $("rotateMode").checked = !!src.rotate;
+    }
+
+    function openMenu()  { fillMenu(cfg); $("menu").showModal(); }
+    function closeMenu() { $("menu").close(); }
+
+    // Saving does not draw anything new: what is on screen stays until the next click.
+    function saveMenu() {
+      const old = cfg;
+      cfg = {
+        deck:   $("deckMode").checked,
+        texts:  lines($("textsBox").value),
+        tiles:  DEFAULTS.tiles,
+        photos: DEFAULTS.photos,
+        rotate: $("rotateMode").checked,
+      };
+      save();
+
+      // new list or mode: start a fresh deck on the next draw
+      if (cfg.deck !== old.deck || cfg.texts.join("\n") !== old.texts.join("\n")) {
+        resetState();
+      }
+
+      fitPhoto();   // applies the rotate checkbox to what's on screen
+      closeMenu();
+    }
+
+    // ---------------------------------------------------------------
+    // Metronome (Web Audio). Tempo and volume are saved under their own
+    // key, separate from the draw settings. They apply instantly: the
+    // menu's Save/Cancel buttons do not affect them.
+    // ---------------------------------------------------------------
+    const BPM_MIN = 32, BPM_MAX = 220;
+    const MKEY = "randomdraw.metro";
+    const LOOKAHEAD = 0.1;        // seconds of clicks scheduled in advance
+    const metro = loadMetro();
+    let audio = null;             // AudioContext, created on the first tap
+    let playing = false;
+    let nextTime = 0;             // when the next click sounds (audio clock, seconds)
+    let timer = null;
+    let wakeLock = null;
+
+    function loadMetro() {
+      const m = { bpm: 100, volume: 0.5 };
+      try {
+        const s = JSON.parse(localStorage.getItem(MKEY));
+        if (s && Number.isFinite(s.bpm))    m.bpm = Math.min(BPM_MAX, Math.max(BPM_MIN, Math.round(s.bpm)));
+        if (s && Number.isFinite(s.volume)) m.volume = Math.min(1, Math.max(0, s.volume));
+      } catch (e) {}
+      return m;
+    }
+    function saveMetro() {
+      try { localStorage.setItem(MKEY, JSON.stringify(metro)); } catch (e) {}
+    }
+
+    function setBpm(v) {
+      metro.bpm = Math.min(BPM_MAX, Math.max(BPM_MIN, Math.round(v)));
+      $("bpmOut").textContent   = metro.bpm;
+      $("bpmLabel").textContent = metro.bpm;
+      $("bpmSlider").value      = metro.bpm;
+      saveMetro();
+    }
+    function setVolume(v) {
+      metro.volume = Math.min(1, Math.max(0, v));
+      $("volSlider").value = Math.round(metro.volume * 100);
+      saveMetro();
+    }
+
+    // one short click at an exact time on the audio clock
+    function click(time) {
+      const osc = audio.createOscillator(), g = audio.createGain();
+      const peak = metro.volume ** 2;                    // squared: closer to how loudness is heard
+      osc.frequency.value = 1000;
+      g.gain.setValueAtTime(peak, time);
+      g.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+      osc.connect(g).connect(audio.destination);
+      osc.start(time);
+      osc.stop(time + 0.06);
+    }
+
+    // runs every 25 ms and schedules every click due in the next 100 ms
+    function scheduler() {
+      while (nextTime < audio.currentTime + LOOKAHEAD) {
+        click(nextTime);
+        nextTime += 60 / metro.bpm;
+      }
+    }
+
+    function startMetro() {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      audio.resume();                                    // browsers start audio suspended
+      playing = true;
+      nextTime = audio.currentTime + 0.05;
+      scheduler();
+      timer = setInterval(scheduler, 25);
+      $("playBtn").textContent = "\u25A0";              // stop square
+      keepAwake(true);
+    }
+    function stopMetro() {
+      playing = false;
+      clearInterval(timer);
+      $("playBtn").textContent = "\u25B6\uFE0E";       // play triangle (text style)
+      keepAwake(false);
+    }
+    function toggleMetro() { playing ? stopMetro() : startMetro(); }
+
+    // keep the screen on while the metronome runs
+    async function keepAwake(on) {
+      try {
+        if (on) {
+          if ("wakeLock" in navigator && (!wakeLock || wakeLock.released)) {
+            const lock = await navigator.wakeLock.request("screen");
+            if (playing) wakeLock = lock; else lock.release();   // stopped while waiting
+          }
+        } else if (wakeLock) {
+          await wakeLock.release();
+          wakeLock = null;
+        }
+      } catch (e) {}
+    }
+    // the browser drops the lock when the page is hidden: ask again on return
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && playing) keepAwake(true);
+    });
+
+    // ---------------------------------------------------------------
+    // Start-up
+    // ---------------------------------------------------------------
+    for (const [k, v] of Object.entries(THEME)) {          // THEME key "bg" -> CSS variable --bg
+      document.documentElement.style.setProperty("--" + k, v);
+    }
+    document.querySelector('meta[name="theme-color"]').content = THEME.bg;
+
+    setBpm(metro.bpm);
+    setVolume(metro.volume);
+
+    $("photo").onload = fitPhoto;
+    window.addEventListener("resize", fitPhoto);
+
+    drawAll();
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+  </script>
+</body>
+</html>
