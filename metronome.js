@@ -55,7 +55,6 @@ const SOUNDS = {
     s.start(t, Math.random() * 0.8, 0.03);   // start somewhere random in the noise, play 30 ms
   },
 
-
   // metallic hi-hat, 808 style: six square waves at unrelated pitches make an
   // inharmonic clang; the filters keep only the top of it, and a short envelope
   // shapes it. `decay` is the length in seconds: short = closed hat, long = open hat.
@@ -74,7 +73,7 @@ const SOUNDS = {
       o.start(t);  o.stop(t + DECAY + 0.01);
     }
     bp.connect(hp).connect(g).connect(out);
-    },
+  },
 
 };
 
