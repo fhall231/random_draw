@@ -51,6 +51,7 @@ const DEFAULTS = {
 	photos: [
       // AUTO-IMG-START
       "img/Bm.svg",
+      "img/circle_scale.svg",
       "img/Cm_trp.svg",
       "img/Gm_trp.svg",
       "img/ms.svg",
